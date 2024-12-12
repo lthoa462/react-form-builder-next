@@ -3,6 +3,8 @@
 */
 
 import React from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { IntlProvider } from 'react-intl';
 import Preview from './preview';
 import Toolbar from './toolbar';
@@ -50,6 +52,7 @@ class ReactFormBuilder extends React.Component {
     const currentAppLocale = AppLocale[language];
     if (this.props.toolbarItems) { toolbarProps.items = this.props.toolbarItems; }
     return (
+      <DndProvider backend={HTML5Backend} context={window}>
         <IntlProvider
           locale={currentAppLocale.locale}
           messages={currentAppLocale.messages}>
@@ -87,6 +90,7 @@ class ReactFormBuilder extends React.Component {
             </div>
           </div>
         </IntlProvider>
+      </DndProvider>
     );
   }
 }

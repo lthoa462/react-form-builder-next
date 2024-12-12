@@ -1,13 +1,13 @@
 {
-  "name": "react-form-builder2",
-  "version": "0.18.4",
+  "name": "@lthoa462/react-form-builder2",
+  "version": "0.18.5",
   "description": "A complete form builder for react.",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kiho/react-form-builder.git"
+    "url": "git+https://github.com/lthoa462/react-form-builder-next.git"
   },
   "files": [
     "lib",
@@ -37,6 +37,7 @@
   "dependencies": {
     "beedle": "^0.8.1",
     "classnames": "^2.2.6",
+    "cross-env": "^7.0.3",
     "date-fns": "^2.16.1",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.8.4",
@@ -104,11 +105,19 @@
     "build:dist": "npm run build && npm run copy:dist",
     "clean": "rimraf dist",
     "copy:dist": "copyfiles -f \"./dist/*\" \"./public/dist\"",
-    "prepublishOnly": "npm run clean && NODE_OPTIONS=--openssl-legacy-provider npm run build:lib && NODE_OPTIONS=--openssl-legacy-provider npm run build",
+    "prepublishOnly": "npm run clean && cross-env NODE_OPTIONS=--openssl-legacy-provider npm run build:lib && NODE_OPTIONS=--openssl-legacy-provider npm run build",
     "watch": "webpack --watch",
     "start": "webpack-dev-server --hot --mode development",
     "serve:api": "node server/index.js",
     "pretranspile": "rimraf lib",
     "transpile": "babel --out-dir lib src --copy-files"
-  }
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "bugs": {
+    "url": "https://github.com/kiho/react-form-builder/issues"
+  },
+  "homepage": "https://github.com/kiho/react-form-builder#readme"
 }
