@@ -137,7 +137,7 @@ a:not([href]) {
 
 // hasRequiredLabel custom
 .has-required-label {
-  color: red;
+  color: red!important;
   padding : 0 0!important;
   min-width: 0!important;
   margin-left: 0!important;
