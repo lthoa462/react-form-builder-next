@@ -363,6 +363,7 @@ export default class FormElementsEdit extends React.Component {
                           value="sort-radio-button-vertical"
                           className="custom-control-input"
                           checked={!this_checked_inline}
+                          onChange={() => {}}
                         />
                         <label
                           className="custom-control-label"
@@ -382,6 +383,7 @@ export default class FormElementsEdit extends React.Component {
                           value="sort-radio-button-horizontal"
                           className="custom-control-input"
                           checked={this_checked_inline}
+                          onChange={() => {}}
                         />
                         <label
                           className="custom-control-label"
@@ -624,6 +626,7 @@ export default class FormElementsEdit extends React.Component {
                       value="unit-symbol-prefix"
                       className='custom-control-input'
                       checked={this.state.element.unitSymbolPrefix}
+                      onChange={() => {}}
                     />
                     <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace("unit-symbol-prefix")}>
                       <IntlMessages id="unit-symbol-attach-before-label" />
@@ -636,6 +639,7 @@ export default class FormElementsEdit extends React.Component {
                       value="unit-symbol-suffix"
                       className='custom-control-input'
                       checked={this.state.element.unitSymbolSuffix}
+                      onChange={() => {}}
                     />
                     <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace("unit-symbol-suffix")}>
                       <IntlMessages id="unit-symbol-attach-after-label" />
