@@ -2,6 +2,7 @@ import enLang from './entries/en-us';
 import itLang from './entries/it-it';
 import vnLang from './entries/vi-vn';
 import faLang from './entries/fa-ir';
+import jpLang from './entries/ja-jp.js';
 
 export const AppLanguages = [
   {
@@ -28,6 +29,12 @@ export const AppLanguages = [
     name: 'farsi',
     icon: 'ir',
   },
+  {
+    languageId: 'japan',
+    locale: 'jp',
+    name: 'Japan',
+    icon: 'jp',
+  },
 ];
 
 const AppLocale = {
@@ -35,6 +42,7 @@ const AppLocale = {
   vi: vnLang,
   it: itLang,
   fa: faLang,
+  jp: jpLang,
 };
 
 export default AppLocale;

@@ -10,6 +10,7 @@ import DynamicOptionList from './dynamic-option-list';
 import { get } from './stores/requests';
 import ID from './UUID';
 import IntlMessages from './language-provider/IntlMessages';
+import { isValidURL } from './commons';
 
 const toolbar = {
   options: ['inline', 'list', 'textAlign', 'fontSize', 'link', 'history'],
@@ -18,6 +19,9 @@ const toolbar = {
     className: undefined,
     options: ['bold', 'italic', 'underline', 'superscript', 'subscript'],
   },
+  // link: {
+  //   popupClassName: 'custom-link-popup', // Thêm class tùy chỉnh cho popup
+  // },
 };
 
 export default class FormElementsEdit extends React.Component {
@@ -28,17 +32,27 @@ export default class FormElementsEdit extends React.Component {
       data: this.props.data,
       dirty: false,
     };
+    this.changeFieldCode = this.changeFieldCode.bind(this);
+    this.changeNumberOfDecimalPlace = this.changeNumberOfDecimalPlace.bind(this);
+    this.changeUnitSymbol = this.changeUnitSymbol.bind(this);
+    this.changeUnitSymbolPlace = this.changeUnitSymbolPlace.bind(this);
   }
 
   toggleRequired() {
     // const this_element = this.state.element;
   }
 
-  editElementProp(elemProperty, targProperty, e) {
+  editElementProp(elemProperty, targProperty, e, propertyElements) {
     // elemProperty could be content or label
     // targProperty could be value or checked
     const this_element = this.state.element;
-    this_element[elemProperty] = e.target[targProperty];
+    // this_element[elemProperty] = e.target[targProperty];
+    if(!!propertyElements && propertyElements.canHaveDisplayHorizontal) {
+      this_element[elemProperty] = targProperty === "checked";
+    } else {
+      this_element[elemProperty] = e.target[targProperty];
+    }
+    this.props.element[elemProperty] = this_element[elemProperty];
 
     this.setState({
       element: this_element,
@@ -82,21 +96,100 @@ export default class FormElementsEdit extends React.Component {
 
   addOptions() {
     const optionsApiUrl = document.getElementById('optionsApiUrl').value;
-    if (optionsApiUrl) {
-      get(optionsApiUrl).then(data => {
-        this.props.element.options = [];
-        const { options } = this.props.element;
-        data.forEach(x => {
-          // eslint-disable-next-line no-param-reassign
-          x.key = ID.uuid();
-          options.push(x);
-        });
-        const this_element = this.state.element;
-        this.setState({
-          element: this_element,
-          dirty: true,
-        });
+    // if (optionsApiUrl) {
+    //   get(optionsApiUrl).then(data => {
+    //     this.props.element.options = [];
+    //     const { options } = this.props.element;
+    //     data.forEach(x => {
+    //       // eslint-disable-next-line no-param-reassign
+    //       x.key = ID.uuid();
+    //       options.push(x);
+    //     });
+    //     const this_element = this.state.element;
+    //     this.setState({
+    //       element: this_element,
+    //       dirty: true,
+    //     });
+    //   });
+    // }
+    if (optionsApiUrl && optionsApiUrl.trim() && isValidURL(optionsApiUrl.trim())) {
+      get(optionsApiUrl).then(res => {
+        if(Array.isArray(res.data) && res.data.length > 0) {
+          this.props.element.options = [];
+          const { options } = this.props.element;
+          res.data.forEach(x => {
+            // eslint-disable-next-line no-param-reassign
+            x.key = ID.uuid();
+            options.push(x);
+          });
+          const this_element = this.state.element;
+          this.setState({
+            element: this_element,
+            dirty: true,
+          });
+        }
+      }).catch(error => {
+        console.log(error);
       });
+    }
+  }
+
+  changeFieldCode(e) {
+    const this_element = this.state.element;
+    this.setState({
+      element: {
+        ...this_element,
+        field_code : e.target.value
+      },
+    });
+    this.props.element.field_code = e.target.value;
+  }
+
+  changeNumberOfDecimalPlace(e) {
+    const this_element = this.state.element;
+    this.setState({
+      element: {
+        ...this_element,
+        numberOfDecimalPlace : e.target.value
+      },
+    });
+    this.props.element.numberOfDecimalPlace = e.target.value;
+  }
+
+  changeUnitSymbol(e) {
+    const this_element = this.state.element;
+    this.setState({
+      element: {
+        ...this_element,
+        unitSymbol : e.target.value
+      },
+    });
+    this.props.element.unitSymbol = e.target.value;
+  }
+
+  changeUnitSymbolPlace(value) {
+    console.log("value", value);
+    const this_element = this.state.element;
+    if(value === "unit-symbol-prefix") {
+      this.setState({
+        element: {
+          ...this_element,
+          unitSymbolPrefix : true,
+          unitSymbolSuffix : false
+        },
+      });
+      this.props.element.unitSymbolPrefix = true;
+      this.props.element.unitSymbolSuffix = false;
+    } else {
+      this.setState({
+        element: {
+          ...this_element,
+          unitSymbolPrefix : false,
+          unitSymbolSuffix : true
+        },
+      });
+      this.props.element.unitSymbolPrefix = false;
+      this.props.element.unitSymbolSuffix = true;
     }
   }
 
@@ -116,10 +209,11 @@ export default class FormElementsEdit extends React.Component {
     const this_checked_italic = this.props.element.hasOwnProperty('italic') ? this.props.element.italic : false;
     const this_checked_center = this.props.element.hasOwnProperty('center') ? this.props.element.center : false;
     const this_checked_page_break = this.props.element.hasOwnProperty('pageBreakBefore') ? this.props.element.pageBreakBefore : false;
+    const this_checked_display_thousand_separators = this.props.element.hasOwnProperty('displayThousandSeparators') ? this.props.element.displayThousandSeparators : false;
     const this_checked_alternate_form = this.props.element.hasOwnProperty('alternateForm') ? this.props.element.alternateForm : false;
 
     const {
-      canHavePageBreakBefore, canHaveAlternateForm, canHaveDisplayHorizontal, canHaveOptionCorrect, canHaveOptionValue,
+      canHavePageBreakBefore, canHaveAlternateForm, canHaveDisplayHorizontal, canHaveOptionCorrect, canHaveOptionValue, canDisplayThousandSeparators, canHaveOptionRequired, canHaveOptionDescription
     } = this.props.element;
     const canHaveImageSize = (this.state.element.element === 'Image' || this.state.element.element === 'Camera');
 
@@ -172,7 +266,7 @@ export default class FormElementsEdit extends React.Component {
         }
         { this.props.element.hasOwnProperty('label') &&
           <div className="form-group">
-            <label><IntlMessages id="display-label" /></label>
+            {/* <label><IntlMessages id="display-label" /></label>
             <Editor
               toolbar={toolbar}
               defaultEditorState={editorState}
@@ -185,7 +279,29 @@ export default class FormElementsEdit extends React.Component {
               <label className="custom-control-label" htmlFor="is-required">
               <IntlMessages id="required" />
               </label>
-            </div>
+            </div> */}
+            {
+              (!this.props.element.column || !this.props.element.parentId) &&
+              <div className="form-group">
+                <label className="control-label" htmlFor="label"><IntlMessages id="display-label" /> <span className="text-danger">*</span></label>
+                <TextAreaAutosize type="text" className="form-control" id="label" defaultValue={this.props.element.label} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'label', 'value')} />
+              </div>
+            }
+            { !this.props.element.column && this.props.element.showDescription &&
+              <div className="form-group">
+                <label className="control-label" htmlFor="questionDescription"><IntlMessages id="description" /></label>
+                <TextAreaAutosize type="text" className="form-control" id="questionDescription" defaultValue={this.props.element.description} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'description', 'value')} />
+              </div>
+            }
+            {
+              !this.props.element.column &&
+              <div className="custom-control custom-checkbox">
+                <input id="is-required" className="custom-control-input" type="checkbox" checked={this_checked} value={true} onChange={this.editElementProp.bind(this, 'required', 'checked')} />
+                <label className="custom-control-label" htmlFor="is-required">
+                <IntlMessages id="required" />
+                </label>
+              </div>
+            }
             { this.props.element.hasOwnProperty('readOnly') &&
               <div className="custom-control custom-checkbox">
                 <input id="is-read-only" className="custom-control-input" type="checkbox" checked={this_read_only} value={true} onChange={this.editElementProp.bind(this, 'readOnly', 'checked')} />
@@ -227,11 +343,60 @@ export default class FormElementsEdit extends React.Component {
               </div>
             }
             { (this.state.element.element === 'RadioButtons' || this.state.element.element === 'Checkboxes') && canHaveDisplayHorizontal &&
-              <div className="custom-control custom-checkbox">
-                <input id="display-horizontal" className="custom-control-input" type="checkbox" checked={this_checked_inline} value={true} onChange={this.editElementProp.bind(this, 'inline', 'checked')} />
-                <label className="custom-control-label" htmlFor="display-horizontal">
-                <IntlMessages id="display-horizontal" />
-                </label>
+              // <div className="custom-control custom-checkbox">
+              //   <input id="display-horizontal" className="custom-control-input" type="checkbox" checked={this_checked_inline} value={true} onChange={this.editElementProp.bind(this, 'inline', 'checked')} />
+              //   <label className="custom-control-label" htmlFor="display-horizontal">
+              //   <IntlMessages id="display-horizontal" />
+              //   </label>
+              // </div>
+              <div className="form-group mt-3">
+                <div className="row align-items-center">
+                  <label className="col-form-label col-auto me-2">
+                    <IntlMessages id="form-elements-edit.can-have-display-horizontal.arrangement" /> :
+                  </label>
+                  <div className="col-auto">
+                    <div className="row SortableItem rfb-item">
+                      <div className="col-auto custom-control custom-radio me-2">
+                        <input
+                          type="radio"
+                          name="sort-radio-button"
+                          value="sort-radio-button-vertical"
+                          className="custom-control-input"
+                          checked={!this_checked_inline}
+                        />
+                        <label
+                          className="custom-control-label"
+                          onClick={(e) =>
+                            this.editElementProp("inline", "none", e, {
+                              canHaveDisplayHorizontal,
+                            })
+                          }
+                        >
+                          <IntlMessages id="form-elements-edit.can-have-display-horizontal.vertical" />
+                        </label>
+                      </div>
+                      <div className="col-auto custom-control custom-radio me-2">
+                        <input
+                          type="radio"
+                          name="sort-radio-button"
+                          value="sort-radio-button-horizontal"
+                          className="custom-control-input"
+                          checked={this_checked_inline}
+                        />
+                        <label
+                          className="custom-control-label"
+                          onClick={(e) =>
+                            this.editElementProp("inline", "checked", e, {
+                              canHaveDisplayHorizontal,
+                            })
+                          }
+                        >
+                          <IntlMessages id="form-elements-edit.can-have-display-horizontal.horizontal" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             }
           </div>
@@ -333,13 +498,25 @@ export default class FormElementsEdit extends React.Component {
           </div>
         }
 
-        {canHaveAlternateForm &&
+        {/* {canHaveAlternateForm &&
           <div className="form-group">
             <label className="control-label"><IntlMessages id="alternate-signature-page" /></label>
             <div className="custom-control custom-checkbox">
               <input id="display-on-alternate" className="custom-control-input" type="checkbox" checked={this_checked_alternate_form} value={true} onChange={this.editElementProp.bind(this, 'alternateForm', 'checked')} />
               <label className="custom-control-label" htmlFor="display-on-alternate">
               <IntlMessages id="display-on-alternate-signature-page" />?
+              </label>
+            </div>
+          </div>
+        } */}
+        {
+          canDisplayThousandSeparators &&
+          <div className="form-group">
+            <label className="control-label"><IntlMessages id="display-thousand-separators-options" /></label>
+            <div className="custom-control custom-checkbox">
+              <input id="display-thousand-separators" className="custom-control-input" type="checkbox" checked={this_checked_display_thousand_separators} value={true} onChange={this.editElementProp.bind(this, 'displayThousandSeparators', 'checked')} />
+              <label className="custom-control-label" htmlFor="display-thousand-separators">
+              <IntlMessages id="display-thousand-separators" />?
               </label>
             </div>
           </div>
@@ -395,12 +572,12 @@ export default class FormElementsEdit extends React.Component {
             </div>
           </div>
         }
-        { this.props.element.showDescription &&
+        {/* { this.props.element.showDescription &&
           <div className="form-group">
             <label className="control-label" htmlFor="questionDescription"><IntlMessages id="description" /></label>
             <TextAreaAutosize type="text" className="form-control" id="questionDescription" defaultValue={this.props.element.description} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'description', 'value')} />
           </div>
-        }
+        } */}
         { this.props.showCorrectColumn && this.props.element.canHaveAnswer && !this.props.element.hasOwnProperty('options') &&
           <div className="form-group">
             <label className="control-label" htmlFor="correctAnswer"><IntlMessages id="correct-answer" /></label>
@@ -412,10 +589,59 @@ export default class FormElementsEdit extends React.Component {
             <label className="control-label" htmlFor="optionsApiUrl"><IntlMessages id="populate-options-from-api" /></label>
             <div className="row">
               <div className="col-sm-6">
-                <input className="form-control" style={{ width: '100%' }} type="text" id="optionsApiUrl" placeholder="http://localhost:8080/api/optionsdata" />
+                {/* <input className="form-control" style={{ width: '100%' }} type="text" id="optionsApiUrl" placeholder="http://localhost:8080/api/optionsdata" /> */}
+                <input value={this.props.element.populateFromApi} onChange={this.editElementProp.bind(this, 'populateFromApi', 'value')} className="form-control" style={{ width: '100%' }} type="text" id="optionsApiUrl" placeholder="http://localhost:8080/api/optionsdata" />
               </div>
               <div className="col-sm-6">
                 <button onClick={this.addOptions.bind(this)} className="btn btn-success"><IntlMessages id="populate" /></button>
+              </div>
+            </div>
+          </div>
+        }
+        { this.props.element.hasOwnProperty('numberOfDecimalPlace') &&
+          <div className="form-group">
+            <label className="control-label" htmlFor="numberOfDecimalPlace"><IntlMessages id="number-of-decimal-place-options" /></label>
+            <div className="row">
+              <div className="col-sm-6">
+                <input value={this.state.element.numberOfDecimalPlace} onChange={this.changeNumberOfDecimalPlace} className="form-control" style={{ width: '100%' }} type="number" id="numberOfDecimalPlace" />
+              </div>
+            </div>
+          </div>
+        }
+        { this.props.element.hasOwnProperty('unitSymbol') &&
+          <div className="form-group">
+            <label className="control-label" htmlFor="unitSymbol"><IntlMessages id="unit-symbol-options" /></label>
+            <div className="row">
+              <div className="col-sm-4">
+                <input value={this.state.element.unitSymbol} onChange={this.changeUnitSymbol} className="form-control" style={{ width: '100%' }} type="text" id="unitSymbol" />
+              </div>
+              <div className="col-sm-8">
+                <div className="row SortableItem rfb-item">
+                  <div className="col-sm-6 custom-control custom-radio">
+                    <input
+                      type="radio"
+                      name="unit-symbol-place"
+                      value="unit-symbol-prefix"
+                      className='custom-control-input'
+                      checked={this.state.element.unitSymbolPrefix}
+                    />
+                    <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace("unit-symbol-prefix")}>
+                      <IntlMessages id="unit-symbol-attach-before-label" />
+                    </label>
+                  </div>
+                  <div className="col-sm-6 custom-control custom-radio">
+                    <input
+                      type="radio"
+                      name="unit-symbol-place"
+                      value="unit-symbol-suffix"
+                      className='custom-control-input'
+                      checked={this.state.element.unitSymbolSuffix}
+                    />
+                    <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace("unit-symbol-suffix")}>
+                      <IntlMessages id="unit-symbol-attach-after-label" />
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -424,11 +650,26 @@ export default class FormElementsEdit extends React.Component {
           <DynamicOptionList showCorrectColumn={this.props.showCorrectColumn}
             canHaveOptionCorrect={canHaveOptionCorrect}
             canHaveOptionValue={canHaveOptionValue}
+            canHaveOptionDescription={canHaveOptionDescription}
+            canHaveOptionRequired={canHaveOptionRequired}
             data={this.props.preview.state.data}
             updateElement={this.props.updateElement}
             preview={this.props.preview}
             element={this.props.element}
             key={this.props.element.options.length} />
+        }
+        { this.props.element.hasOwnProperty('field_code') &&
+          <>
+            <hr></hr>
+            <div className="form-group">
+              <label className="control-label" htmlFor="fieldCode"><IntlMessages id="form-elements-edit.fieldCode" /> <span className="text-danger">*</span></label>
+              <div className="row">
+                <div className="col-sm-6">
+                  <input value={this.state.element.field_code} onChange={this.changeFieldCode} className="form-control" style={{ width: '100%' }} type="text" id="fieldCode" />
+                </div>
+              </div>
+            </div>
+          </>
         }
       </div>
     );

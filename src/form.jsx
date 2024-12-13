@@ -10,8 +10,11 @@ import FormValidator from './form-validator';
 import FormElements from './form-elements';
 import { TwoColumnRow, ThreeColumnRow, MultiColumnRow } from './multi-column';
 import { FieldSet } from './fieldset';
+import { TableInput } from './table-input';
 import CustomElement from './form-elements/custom-element';
 import Registry from './stores/registry';
+import ID from './UUID';
+import { taskDataIsUnique } from './commons';
 
 const {
   Image, Checkboxes, Signature, Download, Camera, FileUpload,
@@ -34,6 +37,25 @@ class ReactForm extends React.Component {
     this.handleBlur = this.handleBlur.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.addRowTableInput = this.addRowTableInput.bind(this);
+    this.deleteRowTableInput = this.deleteRowTableInput.bind(this);
+    this.state = {
+      answerData : [],
+      data : props.data
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(prevProps.data !== this.props.data) {
+      this.setState({
+        data : this.props.data
+      });
+    }
+    if(prevProps.answer_data !== this.props.answer_data) {
+      this.setState({
+        answerData : this._convert(this.props.answer_data)
+      });
+    }
   }
 
   _convert(answers) {
@@ -52,7 +74,8 @@ class ReactForm extends React.Component {
   }
 
   _getDefaultValue(item) {
-    return this.answerData[item.field_name];
+    // return this.answerData[item.field_name];
+    return this.state.answerData[item.field_name];
   }
 
   _optionsDefaultValue(item) {
@@ -63,7 +86,8 @@ class ReactForm extends React.Component {
 
     const defaultChecked = [];
     item.options.forEach(option => {
-      if (this.answerData[`option_${option.key}`]) {
+      // if (this.answerData[`option_${option.key}`]) {
+      if (this.state.answerData[`option_${option.key}`]) {
         defaultChecked.push(option.key);
       }
     });
@@ -75,20 +99,35 @@ class ReactForm extends React.Component {
       element: item.element,
       value: '',
     };
-    if (item.element === 'Rating') {
+    if(!ref) {
+      $item.value = null;
+    } if (item.element === 'Rating') {
       $item.value = ref.inputField.current.state.rating;
     } else if (item.element === 'Tags') {
-      $item.value = ref.inputField.current.state.value;
+      // $item.value = ref.inputField.current.state.value;
+      $item.value = ref.inputField.current.state.value || ref.inputField.current.state.selectValue;
     } else if (item.element === 'DatePicker') {
       $item.value = ref.state.value;
     } else if (item.element === 'Camera') {
       $item.value = ref.state.img;
     } else if (item.element === 'FileUpload') {
       $item.value = ref.state.fileUpload;
+    } else if (item.element === 'MultiSelect') {
+      $item.value = ref.state.selected;
+    } else if (item.element === 'NumberInput') {
+      $item = ReactDOM.findDOMNode(ref.inputField.current);
+      if ($item && typeof $item.value === 'string') {
+        const numericValue = $item.value.replace(/[^0-9.]/g, '');
+        $item.value = parseFloat(numericValue) || null;
+      }
     } else if (ref && ref.inputField && ref.inputField.current) {
       $item = ReactDOM.findDOMNode(ref.inputField.current);
-      if (trimValue && $item && typeof $item.value === 'string') {
-        $item.value = $item.value.trim();
+      if ($item && typeof $item.value === 'string') {
+        if(!!trimValue) {
+          $item.value = $item.value.trim();
+        } else {
+          $item.value = $item.value;
+        }
       }
     }
     return $item;
@@ -146,7 +185,7 @@ class ReactForm extends React.Component {
           if ($item.value === 0) {
             invalid = true;
           }
-        } else if ($item.value === undefined || $item.value.length < 1) {
+        } else if ($item.value === undefined || $item.value?.length < 1) {
           invalid = true;
         }
       }
@@ -158,7 +197,10 @@ class ReactForm extends React.Component {
     const itemData = {
       id: item.id,
       name: item.field_name,
+      field_code: item.field_code,
       custom_name: item.custom_name || item.field_name,
+      column_key : item.columnKey || item.column?.key,
+      column_value : item.columnValue || item.column?.value,
     };
     if (!itemData.name) return null;
     const ref = this.inputs[item.field_name];
@@ -204,54 +246,95 @@ class ReactForm extends React.Component {
     }
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
 
     let errors = [];
-    if (!this.props.skip_validations) {
-      errors = this.validateForm();
-      // Publish errors, if any.
-      this.emitter.emit('formValidation', errors);
-    }
-
-    // Only submit if there are no errors.
-    if (errors.length < 1) {
+    let dataTest = this._collectFormData(this.state.data, false);
+    console.log("answerData", dataTest);
+    console.log("data", this.state.data);
+    if(typeof this.props.onSubmit === 'function') {
+      if (!this.props.skip_validations) {
+        errors = this.validateForm();
+      }
       const { onSubmit } = this.props;
       if (onSubmit) {
-        const data = this._collectFormData(this.props.data, true);
-        onSubmit(data);
-      } else {
-        const $form = ReactDOM.findDOMNode(this.form);
-        $form.submit();
+        let data = this._collectFormData(this.state.data, false);
+        await onSubmit(data, this.state.data, errors);
       }
+    } else {
+      if (!this.props.skip_validations) {
+        errors = this.validateForm();
+        this.emitter.emit('formValidation', errors);
+      }
+      const $form = ReactDOM.findDOMNode(this.form);
+      $form.submit();
     }
+
+    // if (!this.props.skip_validations) {
+    //   errors = this.validateForm();
+    //   // Publish errors, if any.
+    //   this.emitter.emit('formValidation', errors);
+    // }
+
+    // // Only submit if there are no errors.
+    // if (errors.length < 1) {
+    //   const { onSubmit } = this.props;
+    //   if (onSubmit) {
+    //     const data = this._collectFormData(this.props.data, true);
+    //     onSubmit(data);
+    //   } else {
+    //     const $form = ReactDOM.findDOMNode(this.form);
+    //     $form.submit();
+    //   }
+    // }
   }
 
    handleBlur(event) {
     // Call submit function on blur
-    if (this.props.onBlur) {
-      const { onBlur } = this.props;
-      const data = this._collectFormData(this.props.data, true);
-      onBlur(data);
+    // if (this.props.onBlur) {
+    //   const { onBlur } = this.props;
+    //   const data = this._collectFormData(this.props.data, true);
+    //   onBlur(data);
+    // }
+    if(!this.props.read_only) {
+      if (typeof this.props.onBlur === 'function') {
+        const { onBlur } = this.props;
+        const data = this._collectFormData(this.state.data, false);
+        onBlur(data);
+      }
+      // else {
+      //   const data = this._collectFormData(this.state.data, false);
+      //   this.setState({
+      //     answerData : this._convert(data)
+      //   });
+      // }
     }
   }
 
   handleChange(event) {
     // Call submit function on change
-    if (this.props.onChange) {
+    // if (this.props.onChange) {
+    //   const { onChange } = this.props;
+    //   const data = this._collectFormData(this.props.data, false);
+    //   onChange(data);
+    // }
+    if (typeof this.props.onChange === 'function') {
       const { onChange } = this.props;
-      const data = this._collectFormData(this.props.data, false);
-      onChange(data);
+      const data = this._collectFormData(this.state.data, false);
+      onChange(data, this.state.data);
     }
   }
 
   validateForm() {
     const errors = [];
-    let data_items = this.props.data;
+    // let data_items = this.props.data;
+    let data_items = this.state.data;
     const { intl } = this.props;
 
     if (this.props.display_short) {
-      data_items = this.props.data.filter((i) => i.alternateForm === true);
+      // data_items = this.props.data.filter((i) => i.alternateForm === true);
+      data_items = this.state.data.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach(item => {
@@ -260,7 +343,8 @@ class ReactForm extends React.Component {
       }
 
       if (this._isInvalid(item)) {
-        errors.push(`${item.label} ${intl.formatMessage({ id: 'message.is-required' })}!`);
+        // errors.push(`${item.label} ${intl.formatMessage({ id: 'message.is-required' })}!`);
+        errors.push(`${item.column?.text || item.label} ${intl.formatMessage({ id: 'message.is-required' })}!`);
       }
 
       if (item.element === 'EmailInput') {
@@ -273,7 +357,8 @@ class ReactForm extends React.Component {
             );
           const checkEmail = validateEmail(emailValue);
           if (!checkEmail) {
-            errors.push(`${item.label} ${intl.formatMessage({ id: 'message.invalid-email' })}`);
+            // errors.push(`${item.label} ${intl.formatMessage({ id: 'message.invalid-email' })}`);
+            errors.push(`${item.column?.text || item.label} ${intl.formatMessage({ id: 'message.invalid-email' })}`);
           }
         }
       }
@@ -288,21 +373,95 @@ class ReactForm extends React.Component {
           );
           const checkPhone = validatePhone(phoneValue);
           if (!checkPhone) {
-            errors.push(`${item.label} ${intl.formatMessage({ id: 'message.invalid-phone-number' })}`);
+            // errors.push(`${item.label} ${intl.formatMessage({ id: 'message.invalid-phone-number' })}`);
+            errors.push(`${item.column?.text || item.label} ${intl.formatMessage({ id: 'message.invalid-phone-number' })}`);
           }
         }
       }
 
       if (this.props.validateForCorrectness && this._isIncorrect(item)) {
-        errors.push(`${item.label} ${intl.formatMessage({ id: 'message.was-answered-incorrectly' })}!`);
+        // errors.push(`${item.label} ${intl.formatMessage({ id: 'message.was-answered-incorrectly' })}!`);
+        errors.push(`${item.column?.text || item.label} ${intl.formatMessage({ id: 'message.was-answered-incorrectly' })}!`);
       }
     });
 
     return errors;
   }
 
+  async addRowTableInput(parentId, row, col) {
+    let taskData = this.state.data;
+    const itemWithId = taskData.find(item => item.id === parentId);
+    const childItemIds = itemWithId.childItems;
+    const childColItemIds = itemWithId.childItems.slice(0, col);
+    const childColItem = childColItemIds.map(childId => taskData.find(item => item.id === childId));
+    const copyChildItems = [...childColItem];
+    const updatedChildItems = copyChildItems.map(item => {
+      const lastUnderscoreIndex = item.field_name.lastIndexOf('_');
+      return {
+        ...item,
+        field_name : (lastUnderscoreIndex !== -1) ? (item.field_name.substring(0, lastUnderscoreIndex + 1) + ID.uuid()) : item.field_name,
+        id: ID.uuid(),
+      }
+    });
+
+    const position = parseInt(col) * (parseInt(row) + 1);
+    const newChildItemIds = [
+      ...childItemIds.slice(0, position),
+      ...updatedChildItems.map(item => item.id),
+      ...childItemIds.slice(position)
+    ];
+    taskData = taskData.concat(updatedChildItems);
+    taskData = taskData.map(item => {
+      if(item.id === parentId) {
+        return {
+          ...item,
+          rowCount : parseInt(item.rowCount) + 1,
+          childItems: newChildItemIds
+        }
+      } else {
+        return {
+          ...item
+        }
+      }
+    });
+    taskData = taskDataIsUnique(taskData);
+    await this.setState({
+      data : taskData
+    });
+    this.handleChange();
+  }
+
+  async deleteRowTableInput(parentId, row, col) {
+    let taskData = this.state.data;
+    const itemWithId = taskData.find(item => item.id === parentId);
+    let newChildItems = [...itemWithId.childItems];
+    const startIndex = parseInt(row) * parseInt(col);
+    const endIndex = startIndex + parseInt(col);
+    const deleteIds = newChildItems.filter((id, index) => index >= startIndex && index < endIndex);
+    newChildItems.splice(parseInt(row) * parseInt(col), parseInt(col));
+    taskData = taskData.filter(task => !deleteIds.includes(task.id));
+    taskData = taskData.map(item => {
+      if(item.id === parentId) {
+        return {
+          ...item,
+          rowCount : parseInt(item.rowCount) - 1,
+          childItems: newChildItems
+        }
+      } else {
+        return {
+          ...item
+        }
+      }
+    });
+    await this.setState({
+      data : taskData
+    });
+    this.handleChange();
+  }
+
   getDataById(id) {
-    const { data } = this.props;
+    // const { data } = this.props;
+    const { data } = this.state;
     return data.find(x => x.id === id);
   }
 
@@ -324,6 +483,11 @@ class ReactForm extends React.Component {
   getContainerElement(item, Element) {
     const controls = item.childItems.map(x => (x ? this.getInputElement(this.getDataById(x)) : <div>&nbsp;</div>));
     return (<Element mutable={true} key={`form_${item.id}`} data={item} controls={controls} />);
+  }
+
+  getContainerElementForTableInput(item, Element, showAddDeleteRowButtons) {
+    const controls = item.childItems.map(x => (x ? this.getInputElement(this.getDataById(x)) : <div>&nbsp;</div>));
+    return (<Element mutable={true} key={`form_${item.id}`} data={item} controls={controls} addRowTableInput={this.addRowTableInput} deleteRowTableInput={this.deleteRowTableInput} read_only={this.props.read_only} showAddDeleteRowButtons={showAddDeleteRowButtons}/>);
   }
 
   getSimpleElement(item) {
@@ -362,7 +526,11 @@ class ReactForm extends React.Component {
     const actionName = name || 'Submit';
     const { submitButton = false } = this.props;
 
-    return submitButton || <input type='submit' className='btn btn-big' value={actionName} />;
+    // return submitButton || <input type='submit' className='btn btn-big' value={actionName} />;
+    return submitButton || <input type='submit' className='btn btn-big btn-hover-shine btn-success'
+                            value={actionName} disabled={this.props.read_only}
+                            ref={this.props.buttonSaveRef}
+                            style={{ display: this.props.buttonSaveRef ? 'none' : 'block' }} />;
   }
 
   handleRenderBack = () => {
@@ -374,15 +542,18 @@ class ReactForm extends React.Component {
   }
 
   render() {
-    let data_items = this.props.data;
+    // let data_items = this.props.data;
+    let data_items = this.state.data;
 
     if (this.props.display_short) {
-      data_items = this.props.data.filter((i) => i.alternateForm === true);
+      // data_items = this.props.data.filter((i) => i.alternateForm === true);
+      data_items = this.state.data.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach((item) => {
       if (item && item.readOnly && item.variableKey && this.props.variables[item.variableKey]) {
-        this.answerData[item.field_name] = this.props.variables[item.variableKey];
+        // this.answerData[item.field_name] = this.props.variables[item.variableKey];
+        this.state.answerData[item.field_name] = this.props.variables[item.variableKey];
       }
     });
 
@@ -390,11 +561,13 @@ class ReactForm extends React.Component {
       if (!item) return null;
       switch (item.element) {
         case 'TextInput':
+        case 'TimeInput':
         case 'EmailInput':
         case 'PhoneNumber':
         case 'NumberInput':
         case 'TextArea':
         case 'Dropdown':
+        case 'MultiSelect':
         case 'DatePicker':
         case 'RadioButtons':
         case 'Rating':
@@ -403,6 +576,8 @@ class ReactForm extends React.Component {
           return this.getInputElement(item);
         case 'CustomElement':
           return this.getCustomElement(item);
+        case 'TableInput':
+          return this.getContainerElementForTableInput(item, TableInput, this.props.showAddDeleteRowButtons);
         case 'MultiColumnRow':
           return this.getContainerElement(item, MultiColumnRow);
         case 'ThreeColumnRow':

@@ -43,7 +43,7 @@ const TestComponent = () => <h2>Hello</h2>;
 //     key: 'FieldSet',
 //     label:"Field Set",
 //     name:"Field Set",
-    
+
 //   },
 //   {
 //     group_name: 'Multi Column Row',
@@ -62,7 +62,7 @@ const TestComponent = () => <h2>Hello</h2>;
 //     group_name: 'Multi Column Row',
 //     key: 'FiveColumnRow',
 //     element: 'MultiColumnRow',
-//   },  
+//   },
 //   {
 //     group_name: 'Multi Column Row',
 //     key: 'SixColumnRow',
@@ -101,12 +101,12 @@ const TestComponent = () => <h2>Hello</h2>;
 const App = () => (
   <FormBuilder.ReactFormBuilder
     variables={variables}
-    url={url}
-    saveUrl={saveUrl}
+    // url={url}
+    // saveUrl={saveUrl}
     locale='en'
     saveAlways={false}
     // toolbarItems={items}
-  
+
   />);
 
 ReactDOM.render(

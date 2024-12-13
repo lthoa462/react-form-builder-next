@@ -9,16 +9,21 @@ import ItemTypes from "../ItemTypes";
 const accepts = [ItemTypes.BOX, ItemTypes.CARD];
 
 export default function FieldSetBase(props) {
-  
+
   const [childData, setChildData] = useState({});
   const [childItems, setChildItems] = useState(null);
 
   useEffect(() => {
     const { data, class_name, ...rest } = props;
+    // Remove duplicate
+    if (Array.isArray(data.childItems)) {
+      data.childItems = [...new Set(data.childItems.filter((v, i) => !!v || !data.childItems.slice(i + 1).every(x => !x)))];
+      data.childItems.push(null);
+    }
     setChildData(data);
     let count=1;
     createChild(count, data);
-    
+
   }, [props]);
 
 
@@ -32,15 +37,15 @@ export default function FieldSetBase(props) {
   }
 
   const onDropSuccess=(droppedIndex)=>{
-    const totalChild=childItems?childItems.length:0;
+    const totalChild=props.data?.childItems ? props.data?.childItems?.length:0;
     const isLastChild = totalChild===droppedIndex+1 ;
-   
+
     if(isLastChild)
     {
       addNewChild()
     }
   }
-  
+
   const createChild = (count, data) => {
     const colCount = count;
     const className = data.class_name || "col-md-12";
@@ -72,13 +77,11 @@ export default function FieldSetBase(props) {
       <ComponentHeader {...props} isFieldSet={true} />
       <div>
         <ComponentLabel {...props} />
-        <div className="row">        
+        <div className="row">
           {
-            childItems?.map((x, i) => (
-              <div key={`${i}_${x || "_"}`} className={"col-md-12"}>
-                {controls ? (
-                  controls[i]
-                ) : (
+            childItems?.map((x, i) => {
+              if(!controls) {
+                return (
                   <FieldsetDustbin
                     style={{ width: "100%" }}
                     data={childData}
@@ -95,9 +98,12 @@ export default function FieldSetBase(props) {
                     seq={seq}
                     rowNo={i}
                   />
-                )}
-              </div>
-            ))}
+                )
+              }
+              if(!controls[i]?.key) return null;
+              return controls[i];
+            })
+          }
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ export const BoxDragPreview = ({ item }) => {
     const [tickTock, setTickTock] = useState(false);
 
     const text = item.data.content ? item.data.content : (item.data.label ? item.data.label : item.data.text)
-    const isLongText = text.length > 20;
+    const isLongText = text?.length > 20;
     const previewText = isLongText ? `${text.slice(0, 20)}...` : text
 
     // useEffect(function subscribeToIntervalTick() {

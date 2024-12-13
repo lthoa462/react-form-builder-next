@@ -1,7 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useState } from 'react';
 import { DragSource } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import ItemTypes from '../ItemTypes';
+import { Tooltip } from 'reactstrap';
+import ID from '../UUID';
+import IntlMessages from '../language-provider/IntlMessages';
 
 const style = {
   // display: 'inline-block',
@@ -30,6 +33,37 @@ const dragHandleSource = {
   },
 };
 
+// Tooltip for the drag-drop section
+const TooltipItemDragDrop = (props) => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggle = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
+
+  return (
+    <span >
+      <a><span className="is-isolated fas fa-arrows-alt" id={"Tooltip-" + props.id}></span> </a>
+      <Tooltip
+        placement={props.item.placement}
+        isOpen={tooltipOpen}
+        target={"Tooltip-" + props.id}
+        toggle={toggle}
+        modifiers={[
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 10],
+            },
+          },
+        ]}
+      >
+        <IntlMessages id="react-form-builder.drag-drop-tooltip" />
+      </Tooltip>
+    </span>
+  );
+};
+
 class DragHandle extends PureComponent {
   componentDidMount() {
     const { connectDragPreview } = this.props;
@@ -46,7 +80,12 @@ class DragHandle extends PureComponent {
 
   render() {
     const { connectDragSource } = this.props;
-    return connectDragSource(<div className="btn is-isolated" style={style} ><i className="is-isolated fas fa-grip-vertical"></i></div>);
+    const id = ID.uuid();
+    return connectDragSource(
+      <div className="btn is-isolated" style={style} >
+        <TooltipItemDragDrop key={"Tooltip_" + id} item={{ placement: "top" }} id={id} />
+      </div>
+    );
   }
 }
 
