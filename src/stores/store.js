@@ -35,18 +35,21 @@ const store = new Store({
       }
     },
 
+    // click thì sẽ tạo item ở toolbar
     create(context, element) {
       const { data, saveAlways } = context.state;
       data.push(element);
       this.setData(context, data, saveAlways);
     },
 
+    // thực hiện xóa item
     delete(context, element) {
       const { data, saveAlways } = context.state;
       data.splice(data.indexOf(element), 1);
       this.setData(context, data, saveAlways);
     },
 
+    // phần này liên quan đến dustbin - drag, drop
     deleteLastItem(context) {
       const { lastItem } = context.state;
       if (lastItem) {
@@ -55,6 +58,7 @@ const store = new Store({
       }
     },
 
+    // phần này liên quan đến dustbin - drag, drop
     resetLastItem(context) {
       const { lastItem } = context.state;
       if (lastItem) {

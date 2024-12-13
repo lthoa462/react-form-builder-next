@@ -10,6 +10,8 @@ import ToolbarGroupItem from './toolbar-group-item';
 import ID from './UUID';
 import store from './stores/store';
 import { groupBy } from './functions';
+import * as variables from "../variables.js";
+import { getMaxItemNumberFromFieldCode } from './commons';
 
 // function isDefaultItem(item) {
 //   const keys = Object.keys(item);
@@ -64,27 +66,39 @@ class Toolbar extends React.Component {
     switch (element) {
       case 'Dropdown':
         return [
-          { value: 'place_holder_option_1', text: intl.formatMessage({ id: 'place-holder-option-1' }), key: `dropdown_option_${ID.uuid()}` },
-          { value: 'place_holder_option_2', text: intl.formatMessage({ id: 'place-holder-option-2' }), key: `dropdown_option_${ID.uuid()}` },
-          { value: 'place_holder_option_3', text: intl.formatMessage({ id: 'place-holder-option-3' }), key: `dropdown_option_${ID.uuid()}` },
+          { value: '1', text: intl.formatMessage({ id: 'sample-1' }), key: `${ID.uuid()}` },
+          { value: '2', text: intl.formatMessage({ id: 'sample-2' }), key: `${ID.uuid()}` },
+          { value: '3', text: intl.formatMessage({ id: 'sample-3' }), key: `${ID.uuid()}` },
+        ];
+      case 'MultiSelect':
+        return [
+          { value: '1', text: intl.formatMessage({ id: 'sample-1' }), key: `${ID.uuid()}` },
+          { value: '2', text: intl.formatMessage({ id: 'sample-2' }), key: `${ID.uuid()}` },
+          { value: '3', text: intl.formatMessage({ id: 'sample-3' }), key: `${ID.uuid()}` },
+        ];
+      case 'TableInput':
+        return [
+          { value: 'column_1', text: intl.formatMessage({ id: 'column-1' }), key: `${ID.uuid()}`, required : false, description : '' },
+          { value: 'column_2', text: intl.formatMessage({ id: 'column-2' }), key: `${ID.uuid()}`, required : false, description : '' },
+          { value: 'column_3', text: intl.formatMessage({ id: 'column-3' }), key: `${ID.uuid()}`, required : false, description : '' },
         ];
       case 'Tags':
         return [
-          { value: 'place_holder_tag_1', text: intl.formatMessage({ id: 'place-holder-tag-1' }), key: `tags_option_${ID.uuid()}` },
-          { value: 'place_holder_tag_2', text: intl.formatMessage({ id: 'place-holder-tag-2' }), key: `tags_option_${ID.uuid()}` },
-          { value: 'place_holder_tag_3', text: intl.formatMessage({ id: 'place-holder-tag-3' }), key: `tags_option_${ID.uuid()}` },
+          { value: '1', text: intl.formatMessage({ id: 'place-holder-tag-1' }), key: `${ID.uuid()}` },
+          { value: '2', text: intl.formatMessage({ id: 'place-holder-tag-2' }), key: `${ID.uuid()}` },
+          { value: '3', text: intl.formatMessage({ id: 'place-holder-tag-3' }), key: `${ID.uuid()}` },
         ];
       case 'Checkboxes':
         return [
-          { value: 'place_holder_option_1', text: intl.formatMessage({ id: 'place-holder-option-1' }), key: `checkboxes_option_${ID.uuid()}` },
-          { value: 'place_holder_option_2', text: intl.formatMessage({ id: 'place-holder-option-2' }), key: `checkboxes_option_${ID.uuid()}` },
-          { value: 'place_holder_option_3', text: intl.formatMessage({ id: 'place-holder-option-3' }), key: `checkboxes_option_${ID.uuid()}` },
+          { value: '1', text: intl.formatMessage({ id: 'sample-1' }), key: `${ID.uuid()}` },
+          { value: '2', text: intl.formatMessage({ id: 'sample-2' }), key: `${ID.uuid()}` },
+          { value: '3', text: intl.formatMessage({ id: 'sample-3' }), key: `${ID.uuid()}` },
         ];
       case 'RadioButtons':
         return [
-          { value: 'place_holder_option_1', text: intl.formatMessage({ id: 'place-holder-option-1' }), key: `radiobuttons_option_${ID.uuid()}` },
-          { value: 'place_holder_option_2', text: intl.formatMessage({ id: 'place-holder-option-2' }), key: `radiobuttons_option_${ID.uuid()}` },
-          { value: 'place_holder_option_3', text: intl.formatMessage({ id: 'place-holder-option-3' }), key: `radiobuttons_option_${ID.uuid()}` },
+          { value: '1', text: intl.formatMessage({ id: 'sample-1' }), key: `${ID.uuid()}` },
+          { value: '2', text: intl.formatMessage({ id: 'sample-2' }), key: `${ID.uuid()}` },
+          { value: '3', text: intl.formatMessage({ id: 'sample-3' }), key: `${ID.uuid()}` },
         ];
       default:
         return [];
@@ -99,6 +113,8 @@ class Toolbar extends React.Component {
         icon: 'fas fa-heading',
         static: true,
         content: intl.formatMessage({ id: 'place-holder-text' }),
+        field_name: 'header_',
+        field_code : intl.formatMessage({ id: 'header-text' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Label',
@@ -106,6 +122,8 @@ class Toolbar extends React.Component {
         static: true,
         icon: 'fas fa-font',
         content: intl.formatMessage({ id: 'place-holder-text' }),
+        field_name: 'label_',
+        field_code : intl.formatMessage({ id: 'label' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Paragraph',
@@ -113,12 +131,32 @@ class Toolbar extends React.Component {
         static: true,
         icon: 'fas fa-paragraph',
         content: intl.formatMessage({ id: 'place-holder-text' }),
+        field_name: 'paragraph_',
+        field_code : intl.formatMessage({ id: 'paragraph' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'LineBreak',
         name: intl.formatMessage({ id: 'line-break' }),
         static: true,
         icon: 'fas fa-arrows-alt-h',
+        field_name: 'line_break_',
+        field_code : intl.formatMessage({ id: 'line-break' }).replace(/\s+/g, '') + '_',
+      },
+      {
+        key: 'TableInput',
+        canHaveAnswer: true,
+        canPopulateFromApi : false,
+        canHaveOptionValue : false,
+        canHaveOptionRequired : true,
+        canHaveOptionDescription : true,
+        name: intl.formatMessage({ id: 'table-input' }),
+        label: intl.formatMessage({ id: 'table-input' }),
+        icon: 'fas fa-table',
+        field_name: 'table_input_',
+        field_code : intl.formatMessage({ id: 'table-input' }).replace(/\s+/g, '') + '_',
+        options: [],
+        rowCount: 1,
+        prevRowCount: 1,
       },
       {
         key: 'Dropdown',
@@ -128,6 +166,28 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'dropdown_',
         options: [],
+        field_code : intl.formatMessage({ id: 'dropdown' }).replace(/\s+/g, '') + '_',
+      },
+      {
+        key: 'MultiSelect',
+        canHaveAnswer: true,
+        name: intl.formatMessage({ id: 'multiselect' }),
+        icon: 'fas fa-caret-square-down',
+        label: intl.formatMessage({ id: 'multiselect' }),
+        field_name: 'multiselect_',
+        field_code : intl.formatMessage({ id: 'multiselect' }).replace(/\s+/g, '') + '_',
+        options: [],
+        overrideStrings : {
+          search : intl.formatMessage({ id: 'search' }),
+          allItemsAreSelected: intl.formatMessage({ id: 'allItemsAreSelected' }),
+          clearSearch: intl.formatMessage({ id: 'clearSearch' }),
+          clearSelected: intl.formatMessage({ id: 'clearSelected' }),
+          noOptions: intl.formatMessage({ id: 'noOptions' }),
+          selectAll: intl.formatMessage({ id: 'selectAll' }),
+          selectAllFiltered: intl.formatMessage({ id: 'selectAllFiltered' }),
+          selectSomeItems: intl.formatMessage({ id: 'selectSomeItems' }),
+          create: intl.formatMessage({ id: 'create' }),
+        },
       },
       {
         key: 'Tags',
@@ -137,6 +197,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'tags_',
         options: [],
+        field_code : intl.formatMessage({ id: 'tags' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Checkboxes',
@@ -146,6 +207,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'checkboxes_',
         options: [],
+        field_code : intl.formatMessage({ id: 'checkboxes' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'RadioButtons',
@@ -155,6 +217,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'radiobuttons_',
         options: [],
+        field_code : intl.formatMessage({ id: 'multiple-choice' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'TextInput',
@@ -163,6 +226,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         icon: 'fas fa-font',
         field_name: 'text_input_',
+        field_code : intl.formatMessage({ id: 'text-input' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'EmailInput',
@@ -171,6 +235,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-email' }),
         icon: 'fas fa-envelope',
         field_name: 'email_input_',
+        field_code : intl.formatMessage({ id: 'email-input' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'NumberInput',
@@ -179,6 +244,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         icon: 'fas fa-plus',
         field_name: 'number_input_',
+        field_code : intl.formatMessage({ id: 'number-input' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'PhoneNumber',
@@ -187,6 +253,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-phone-number' }),
         icon: 'fas fa-phone',
         field_name: 'phone_input_',
+        field_code : intl.formatMessage({ id: 'phone-input' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'TextArea',
@@ -195,6 +262,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         icon: 'fas fa-text-height',
         field_name: 'text_area_',
+        field_code : intl.formatMessage({ id: 'multi-line-input' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'FieldSet',
@@ -203,6 +271,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'fieldset' }),
         icon: 'fas fa-bars',
         field_name: 'fieldset-element',
+        field_code : intl.formatMessage({ id: 'fieldset' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'TwoColumnRow',
@@ -211,6 +280,7 @@ class Toolbar extends React.Component {
         label: '',
         icon: 'fas fa-columns',
         field_name: 'two_col_row_',
+        field_code : intl.formatMessage({ id: 'two-columns-row' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'ThreeColumnRow',
@@ -219,6 +289,7 @@ class Toolbar extends React.Component {
         label: '',
         icon: 'fas fa-columns',
         field_name: 'three_col_row_',
+        field_code : intl.formatMessage({ id: 'three-columns-row' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'FourColumnRow',
@@ -230,6 +301,7 @@ class Toolbar extends React.Component {
         field_name: 'four_col_row_',
         col_count: 4,
         class_name: 'col-md-3',
+        field_code : intl.formatMessage({ id: 'four-columns-row' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'FiveColumnRow',
@@ -241,6 +313,7 @@ class Toolbar extends React.Component {
         field_name: 'five_col_row_',
         col_count: 5,
         class_name: 'col',
+        field_code : intl.formatMessage({ id: 'five-columns-row' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'SixColumnRow',
@@ -252,6 +325,7 @@ class Toolbar extends React.Component {
         field_name: 'six_col_row_',
         col_count: 6,
         class_name: 'col-md-2',
+        field_code : intl.formatMessage({ id: 'six-columns-row' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Image',
@@ -260,6 +334,7 @@ class Toolbar extends React.Component {
         icon: 'far fa-image',
         field_name: 'image_',
         src: '',
+        field_code : intl.formatMessage({ id: 'image' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Rating',
@@ -268,6 +343,7 @@ class Toolbar extends React.Component {
         label: intl.formatMessage({ id: 'place-holder-label' }),
         icon: 'fas fa-star',
         field_name: 'rating_',
+        field_code : intl.formatMessage({ id: 'rating' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'DatePicker',
@@ -282,6 +358,16 @@ class Toolbar extends React.Component {
         icon: 'far fa-calendar-alt',
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'date_picker_',
+        field_code : intl.formatMessage({ id: 'date' }).replace(/\s+/g, '') + '_',
+      },
+      {
+        key: 'TimeInput',
+        canHaveAnswer: true,
+        name: intl.formatMessage({ id: 'time-input' }),
+        label: intl.formatMessage({ id: 'time-input' }),
+        icon: 'fas fa-clock',
+        field_name: 'time_input_',
+        field_code : intl.formatMessage({ id: 'time-input' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Signature',
@@ -290,6 +376,7 @@ class Toolbar extends React.Component {
         icon: 'fas fa-pen-square',
         label: intl.formatMessage({ id: 'signature' }),
         field_name: 'signature_',
+        field_code : intl.formatMessage({ id: 'signature' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'HyperLink',
@@ -298,6 +385,8 @@ class Toolbar extends React.Component {
         static: true,
         content: intl.formatMessage({ id: 'place-holder-website-link' }),
         href: 'http://www.example.com',
+        field_name: 'hyper_link_',
+        field_code : intl.formatMessage({ id: 'website' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Download',
@@ -308,6 +397,7 @@ class Toolbar extends React.Component {
         field_name: 'download_',
         file_path: '',
         _href: '',
+        field_code : intl.formatMessage({ id: 'file-attachment' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Range',
@@ -321,6 +411,7 @@ class Toolbar extends React.Component {
         max_value: 5,
         min_label: intl.formatMessage({ id: 'easy' }),
         max_label: intl.formatMessage({ id: 'difficult' }),
+        field_code : intl.formatMessage({ id: 'range' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'Camera',
@@ -328,6 +419,7 @@ class Toolbar extends React.Component {
         icon: 'fas fa-camera',
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'camera_',
+        field_code : intl.formatMessage({ id: 'camera' }).replace(/\s+/g, '') + '_',
       },
       {
         key: 'FileUpload',
@@ -335,6 +427,7 @@ class Toolbar extends React.Component {
         icon: 'fas fa-file',
         label: intl.formatMessage({ id: 'place-holder-label' }),
         field_name: 'file_upload_',
+        field_code : intl.formatMessage({ id: 'file-upload' }).replace(/\s+/g, '') + '_',
       },
     ];
   }
@@ -393,6 +486,8 @@ class Toolbar extends React.Component {
     elementOptions.canHaveOptionCorrect = item.canHaveOptionCorrect !== false;
     elementOptions.canHaveOptionValue = item.canHaveOptionValue !== false;
     elementOptions.canPopulateFromApi = item.canPopulateFromApi !== false;
+    elementOptions.canHaveOptionRequired = !!item.canHaveOptionRequired;
+    elementOptions.canHaveOptionDescription = !!item.canHaveOptionDescription;
 
     if (item.class_name) {
       elementOptions.class_name = item.class_name;
@@ -428,9 +523,31 @@ class Toolbar extends React.Component {
       elementOptions.col_count = item.col_count;
     }
 
+    if(elementKey === 'TableInput') {
+      elementOptions.rowCount = item.rowCount;
+      elementOptions.prevRowCount = item.prevRowCount;
+    }
+
+    if(elementKey === 'MultiSelect') {
+      elementOptions.overrideStrings = item.overrideStrings ;
+    }
+
+    if(elementKey === 'NumberInput') {
+      elementOptions.canDisplayThousandSeparators = item.canDisplayThousandSeparators !== false ;
+      elementOptions.numberOfDecimalPlace = item.numberOfDecimalPlace || 0;
+      elementOptions.unitSymbol = item.unitSymbol || '';
+      elementOptions.unitSymbolPrefix = item.unitSymbolPrefix !== false;
+      elementOptions.unitSymbolSuffix = item.unitSymbolSuffix || false;
+    }
+
     if (item.defaultValue) { elementOptions.defaultValue = item.defaultValue; }
 
     if (item.field_name) { elementOptions.field_name = item.field_name + ID.uuid(); }
+
+    let maxItemNumberFromFieldCode = getMaxItemNumberFromFieldCode(this.state.store?.data);
+    elementOptions.field_code = item.field_code + (maxItemNumberFromFieldCode + 1);
+
+    elementOptions.description = "";
 
     if (item.label) { elementOptions.label = item.label; }
 

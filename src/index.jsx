@@ -48,6 +48,10 @@ class ReactFormBuilder extends React.Component {
       showDescription: this.props.show_description,
     };
 
+    const match = this.props.match;
+    const templateName = this.props.templateName;
+    const isCopyForm = this.props.isCopyForm;
+
     const language = this.props.locale ? this.props.locale : 'en';
     const currentAppLocale = AppLocale[language];
     if (this.props.toolbarItems) { toolbarProps.items = this.props.toolbarItems; }
@@ -66,7 +70,7 @@ class ReactFormBuilder extends React.Component {
            <Container />
          </div> */}
             <div className="react-form-builder clearfix">
-              <div>
+              <div className='row'>
                 <Preview
                   files={this.props.files}
                   manualEditModeOff={this.manualEditModeOff.bind(this)}
@@ -85,7 +89,7 @@ class ReactFormBuilder extends React.Component {
                   renderEditForm={this.props.renderEditForm}
                   saveAlways={this.props.saveAlways}
                 />
-                <Toolbar {...toolbarProps} customItems={this.props.customToolbarItems} />
+                <Toolbar {...toolbarProps} customItems={this.props.customToolbarItems} match={match} templateName={templateName} isCopyForm={isCopyForm} />
               </div>
             </div>
           </div>

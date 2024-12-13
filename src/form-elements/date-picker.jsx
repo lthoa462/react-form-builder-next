@@ -13,25 +13,38 @@ class DatePicker extends React.Component {
     this.state = DatePicker.updateDateTime(props, { formatMask }, formatMask);
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data || prevProps.defaultValue !== this.props.defaultValue) {
+      const { formatMask } = DatePicker.updateFormat(this.props, null);
+      let state = DatePicker.updateDateTime(this.props, { formatMask }, formatMask);
+      this.setState({
+        ...state
+      })
+    }
+  }
+
   // formatMask = '';
 
-  handleChange = (dt) => {
+  handleChange = async(dt) => {
     let placeholder;
     const { formatMask } = this.state;
     if (dt && dt.target) {
       placeholder = (dt && dt.target && dt.target.value === '') ? formatMask.toLowerCase() : '';
       const formattedDate = (dt.target.value) ? format(parseISO(dt.target.value), formatMask) : '';
-      this.setState({
+      await this.setState({
         value: formattedDate,
         internalValue: formattedDate,
         placeholder,
       });
     } else {
-      this.setState({
+      await this.setState({
         value: (dt) ? format(dt, formatMask) : '',
         internalValue: dt,
         placeholder,
       });
+    }
+    if(typeof this.props.handleChange === 'function') {
+      this.props.handleChange();
     }
   };
 
@@ -49,13 +62,13 @@ class DatePicker extends React.Component {
     let value;
     let internalValue;
     const { defaultToday } = props.data;
-    if (defaultToday && (props.defaultValue === '' || props.defaultValue === undefined)) {
+    if (defaultToday && (props.defaultValue === '' || !props.defaultValue)) {
       value = format(new Date(), formatMask);
       internalValue = new Date();
     } else {
       value = props.defaultValue;
 
-      if (value === '' || value === undefined) {
+      if (value === '' || !value) {
         internalValue = undefined;
       } else {
         internalValue = parse(value, state.formatMask, new Date());
@@ -110,7 +123,7 @@ class DatePicker extends React.Component {
         <ComponentHeader {...this.props} />
         <div className="form-group">
           <ComponentLabel {...this.props} />
-          <div>
+          <div className='react-datepicker-wrapper-block'>
             { readOnly &&
               <input type="text"
                      name={props.name}
