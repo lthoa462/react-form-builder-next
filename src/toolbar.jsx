@@ -10,7 +10,6 @@ import ToolbarGroupItem from './toolbar-group-item';
 import ID from './UUID';
 import store from './stores/store';
 import { groupBy } from './functions';
-import * as variables from "../variables.js";
 import { getMaxItemNumberFromFieldCode } from './commons';
 
 // function isDefaultItem(item) {
