@@ -129,7 +129,7 @@ export default function TableInputBase(props) {
     addRowTableInput,
     deleteRowTableInput,
     read_only,
-    showAddDeleteRowButtons  
+    showAddDeleteRowButtons
   } = props;
   const { pageBreakBefore } = childData;
   let baseClasses = "SortableItem rfb-item";
@@ -149,7 +149,7 @@ export default function TableInputBase(props) {
                 <th key={`header_column_${index}`}>
                     { column.text }
                     &nbsp;
-                    { !!column.text && !!column.required && <span className="label-required badge badge-danger has-required-label">*</span> }
+                    { !!column.text && !!column.required && <span className="label-required has-required-label">*</span> }
                     { !!column.text && !!column.description && <TooltipColumn key={"Tooltip_" + column.key} item={{ placement: "auto" }} id={column.key} description={column.description} /> }
                 </th>
               ))}

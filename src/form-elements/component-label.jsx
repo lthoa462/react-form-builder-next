@@ -45,13 +45,13 @@ const ComponentLabel = (props) => {
       {
         !!description ? <>
           <span dangerouslySetInnerHTML={{ __html: labelText }} className="py-1 px-2"/>
-          { hasRequiredLabel && <span className="label-required badge badge-danger has-required-label" dangerouslySetInnerHTML={{ __html: "*" }} /> }
+          { hasRequiredLabel && <span className="label-required has-required-label" dangerouslySetInnerHTML={{ __html: "*" }} /> }
           <TooltipItem key={"Tooltip_" + props.data?.id} item={{ placement: "auto" }} id={props.data?.id} description={description} />
         </> : <>
           <span dangerouslySetInnerHTML={{ __html: labelText }} className="py-1 px-2" />
           { hasRequiredLabel &&
             <>
-              <span className="label-required badge badge-danger has-required-label">*</span>
+              <span className="label-required has-required-label">*</span>
               <span className="pe-1"></span>
             </>
           }
