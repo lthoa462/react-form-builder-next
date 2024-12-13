@@ -24,7 +24,7 @@ const Box = ({ item, color }) => {
     description
   } = item.data;
 
-  const backgroundColor = color ? '#059862' : 'red';
+  const backgroundColor = color ? '#059862' : 'white';
   return <div style={{ ...boxStyles, backgroundColor }}>
     <li className="clearfix" >
       <div className="row">
