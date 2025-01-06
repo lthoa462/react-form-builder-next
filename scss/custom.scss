@@ -185,3 +185,20 @@ a:not([href]) {
 .dismiss-button {
   color: white!important;
 }
+
+.react-form-builder-preview,
+.react-form-builder-form {
+  .form-control {
+    height: calc(1.5em + 0.75rem + 2px);
+  }
+
+  input[type="checkbox" i] {
+    background-color: initial;
+    cursor: default;
+    appearance: auto;
+    box-sizing: border-box;
+    margin: 3px 3px 3px 4px;
+    padding: initial;
+    border: initial;
+  }
+}
