@@ -12,6 +12,7 @@ import FormGenerator from './form';
 import store from './stores/store';
 import Registry from './stores/registry';
 import AppLocale from './language-provider';
+import * as variables from '../variables';
 
 class ReactFormBuilder extends React.Component {
   constructor(props) {
@@ -48,9 +49,10 @@ class ReactFormBuilder extends React.Component {
       showDescription: this.props.show_description,
     };
 
-    const match = this.props.match;
-    const templateName = this.props.templateName;
-    const isCopyForm = this.props.isCopyForm;
+    const { match } = this.props;
+    const { templateName } = this.props;
+    const { isCopyForm } = this.props;
+    const variablesExternal = this.props.variables ? this.props.variables : variables;
 
     const language = this.props.locale ? this.props.locale : 'en';
     const currentAppLocale = AppLocale[language];
@@ -83,7 +85,7 @@ class ReactFormBuilder extends React.Component {
                   onPost={this.props.onPost}
                   editModeOn={this.editModeOn}
                   editMode={this.state.editMode}
-                  variables={this.props.variables}
+                  variables={variablesExternal}
                   registry={Registry}
                   editElement={this.state.editElement}
                   renderEditForm={this.props.renderEditForm}
@@ -102,11 +104,12 @@ class ReactFormBuilder extends React.Component {
 function ReactFormGenerator(props) {
   const language = props.locale ? props.locale : 'en';
   const currentAppLocale = AppLocale[language];
+  const variablesExternal = props.variables ? props.variables : variables;
   return (
     <IntlProvider
       locale={currentAppLocale.locale}
       messages={currentAppLocale.messages}>
-      <FormGenerator {...props} />
+      <FormGenerator {...props} variables={variablesExternal}/>
     </IntlProvider>
   );
 }

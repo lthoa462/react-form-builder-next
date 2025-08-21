@@ -97,13 +97,12 @@ const TestComponent = () => <h2>Hello</h2>;
 //   },
 // ];
 
-
 const App = () => (
   <FormBuilder.ReactFormBuilder
     variables={variables}
     // url={url}
     // saveUrl={saveUrl}
-    locale='en'
+    locale='jp'
     saveAlways={false}
     // toolbarItems={items}
 
