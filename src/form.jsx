@@ -27,9 +27,12 @@ class ReactForm extends React.Component {
 
   answerData;
 
+  taskData;
+
   constructor(props) {
     super(props);
     this.answerData = this._convert(props.answer_data);
+    this.taskData = props.data;
     this.emitter = new EventEmitter();
     this.getDataById = this.getDataById.bind(this);
 
@@ -235,8 +238,8 @@ class ReactForm extends React.Component {
       }
       const { onSubmit } = this.props;
       if (onSubmit) {
-        const data = this._collectFormData(this.props.data, false);
-        await onSubmit(data, this.props.data, errors);
+        const data = this._collectFormData(this.taskData, false);
+        await onSubmit(data, this.taskData, errors);
       }
     } else {
       if (!this.props.skip_validations) {
@@ -257,7 +260,7 @@ class ReactForm extends React.Component {
     // if (errors.length < 1) {
     //   const { onSubmit } = this.props;
     //   if (onSubmit) {
-    //     const data = this._collectFormData(this.props.data, true);
+    //     const data = this._collectFormData(this.taskData, true);
     //     onSubmit(data);
     //   } else {
     //     const $form = ReactDOM.findDOMNode(this.form);
@@ -270,13 +273,13 @@ class ReactForm extends React.Component {
     // Call submit function on blur
     // if (this.props.onBlur) {
     //   const { onBlur } = this.props;
-    //   const data = this._collectFormData(this.props.data, true);
+    //   const data = this._collectFormData(this.taskData, true);
     //   onBlur(data);
     // }
     if (!this.props.read_only) {
       if (typeof this.props.onBlur === 'function') {
         const { onBlur } = this.props;
-        const data = this._collectFormData(this.props.data, false);
+        const data = this._collectFormData(this.taskData, false);
         onBlur(data);
       }
       // else {
@@ -292,23 +295,23 @@ class ReactForm extends React.Component {
     // Call submit function on change
     // if (this.props.onChange) {
     //   const { onChange } = this.props;
-    //   const data = this._collectFormData(this.props.data, false);
+    //   const data = this._collectFormData(this.taskData, false);
     //   onChange(data);
     // }
     if (typeof this.props.onChange === 'function') {
       const { onChange } = this.props;
-      const data = this._collectFormData(this.props.data, false);
-      onChange(data, this.props.data);
+      const data = this._collectFormData(this.taskData, false);
+      onChange(data, this.taskData);
     }
   }
 
   validateForm() {
     const errors = [];
-    let data_items = this.props.data;
+    let data_items = this.taskData;
     const { intl } = this.props;
 
     if (this.props.display_short) {
-      data_items = this.props.data.filter((i) => i.alternateForm === true);
+      data_items = this.taskData.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach(item => {
@@ -363,7 +366,7 @@ class ReactForm extends React.Component {
   }
 
   async addRowTableInput(parentId, row, col) {
-    let taskData = this.props.data;
+    let { taskData } = this;
     const itemWithId = taskData.find(item => item.id === parentId);
     const childItemIds = itemWithId.childItems;
     const childColItemIds = itemWithId.childItems.slice(0, col);
@@ -398,14 +401,12 @@ class ReactForm extends React.Component {
         };
     });
     taskData = taskDataIsUnique(taskData);
-    await this.setState({
-      data: taskData,
-    });
+    this.taskData = taskData;
     this.handleChange();
   }
 
   async deleteRowTableInput(parentId, row, col) {
-    let taskData = this.props.data;
+    let { taskData } = this;
     const itemWithId = taskData.find(item => item.id === parentId);
     const newChildItems = [...itemWithId.childItems];
     const startIndex = parseInt(row) * parseInt(col);
@@ -425,9 +426,7 @@ class ReactForm extends React.Component {
           ...item,
         };
     });
-    await this.setState({
-      data: taskData,
-    });
+    this.taskData = taskData;
     this.handleChange();
   }
 
@@ -513,11 +512,11 @@ class ReactForm extends React.Component {
   }
 
   render() {
-    let data_items = this.props.data;
+    let data_items = this.taskData;
 
     if (this.props.display_short) {
-      // data_items = this.props.data.filter((i) => i.alternateForm === true);
-      data_items = this.props.data.filter((i) => i.alternateForm === true);
+      // data_items = this.taskData.filter((i) => i.alternateForm === true);
+      data_items = this.taskData.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach((item) => {
