@@ -47,8 +47,8 @@ export default class FormElementsEdit extends React.Component {
     // targProperty could be value or checked
     const this_element = this.state.element;
     // this_element[elemProperty] = e.target[targProperty];
-    if(!!propertyElements && propertyElements.canHaveDisplayHorizontal) {
-      this_element[elemProperty] = targProperty === "checked";
+    if (!!propertyElements && propertyElements.canHaveDisplayHorizontal) {
+      this_element[elemProperty] = targProperty === 'checked';
     } else {
       this_element[elemProperty] = e.target[targProperty];
     }
@@ -114,7 +114,7 @@ export default class FormElementsEdit extends React.Component {
     // }
     if (optionsApiUrl && optionsApiUrl.trim() && isValidURL(optionsApiUrl.trim())) {
       get(optionsApiUrl).then(res => {
-        if(Array.isArray(res.data) && res.data.length > 0) {
+        if (Array.isArray(res.data) && res.data.length > 0) {
           this.props.element.options = [];
           const { options } = this.props.element;
           res.data.forEach(x => {
@@ -139,7 +139,7 @@ export default class FormElementsEdit extends React.Component {
     this.setState({
       element: {
         ...this_element,
-        field_code : e.target.value
+        field_code: e.target.value,
       },
     });
     this.props.element.field_code = e.target.value;
@@ -150,7 +150,7 @@ export default class FormElementsEdit extends React.Component {
     this.setState({
       element: {
         ...this_element,
-        numberOfDecimalPlace : e.target.value
+        numberOfDecimalPlace: e.target.value,
       },
     });
     this.props.element.numberOfDecimalPlace = e.target.value;
@@ -161,21 +161,21 @@ export default class FormElementsEdit extends React.Component {
     this.setState({
       element: {
         ...this_element,
-        unitSymbol : e.target.value
+        unitSymbol: e.target.value,
       },
     });
     this.props.element.unitSymbol = e.target.value;
   }
 
   changeUnitSymbolPlace(value) {
-    console.log("value", value);
+    console.log('value', value);
     const this_element = this.state.element;
-    if(value === "unit-symbol-prefix") {
+    if (value === 'unit-symbol-prefix') {
       this.setState({
         element: {
           ...this_element,
-          unitSymbolPrefix : true,
-          unitSymbolSuffix : false
+          unitSymbolPrefix: true,
+          unitSymbolSuffix: false,
         },
       });
       this.props.element.unitSymbolPrefix = true;
@@ -184,8 +184,8 @@ export default class FormElementsEdit extends React.Component {
       this.setState({
         element: {
           ...this_element,
-          unitSymbolPrefix : false,
-          unitSymbolSuffix : true
+          unitSymbolPrefix: false,
+          unitSymbolSuffix: true,
         },
       });
       this.props.element.unitSymbolPrefix = false;
@@ -213,7 +213,7 @@ export default class FormElementsEdit extends React.Component {
     const this_checked_alternate_form = this.props.element.hasOwnProperty('alternateForm') ? this.props.element.alternateForm : false;
 
     const {
-      canHavePageBreakBefore, canHaveAlternateForm, canHaveDisplayHorizontal, canHaveOptionCorrect, canHaveOptionValue, canDisplayThousandSeparators, canHaveOptionRequired, canHaveOptionDescription
+      canHavePageBreakBefore, canHaveAlternateForm, canHaveDisplayHorizontal, canHaveOptionCorrect, canHaveOptionValue, canDisplayThousandSeparators, canHaveOptionRequired, canHaveOptionDescription,
     } = this.props.element;
     const canHaveImageSize = (this.state.element.element === 'Image' || this.state.element.element === 'Camera');
 
@@ -238,7 +238,9 @@ export default class FormElementsEdit extends React.Component {
         </div>
         { this.props.element.hasOwnProperty('content') &&
           <div className="form-group">
-            <label className="control-label"><IntlMessages id="text-to-display" />:</label>
+            <label
+            // className="control-label"
+            ><IntlMessages id="text-to-display" />:</label>
 
             <Editor
               toolbar={toolbar}
@@ -250,7 +252,9 @@ export default class FormElementsEdit extends React.Component {
         }
         { this.props.element.hasOwnProperty('file_path') &&
           <div className="form-group">
-            <label className="control-label" htmlFor="fileSelect"><IntlMessages id="choose-file" />:</label>
+            <label
+            // className="control-label"
+             htmlFor="fileSelect"><IntlMessages id="choose-file" />:</label>
             <select id="fileSelect" className="form-control" defaultValue={this.props.element.file_path} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'file_path', 'value')}>
               {this_files.map((file) => {
                 const this_key = `file_${file.id}`;
@@ -283,13 +287,17 @@ export default class FormElementsEdit extends React.Component {
             {
               (!this.props.element.column || !this.props.element.parentId) &&
               <div className="form-group">
-                <label className="control-label" htmlFor="label"><IntlMessages id="display-label" /> <span className="text-danger">*</span></label>
+                <label
+                // className="control-label"
+                 htmlFor="label"><IntlMessages id="display-label" /> <span className="text-danger">*</span></label>
                 <TextAreaAutosize type="text" className="form-control" id="label" defaultValue={this.props.element.label} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'label', 'value')} />
               </div>
             }
             { !this.props.element.column && this.props.element.showDescription &&
               <div className="form-group">
-                <label className="control-label" htmlFor="questionDescription"><IntlMessages id="description" /></label>
+                <label
+                // className="control-label"
+                 htmlFor="questionDescription"><IntlMessages id="description" /></label>
                 <TextAreaAutosize type="text" className="form-control" id="questionDescription" defaultValue={this.props.element.description} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'description', 'value')} />
               </div>
             }
@@ -367,8 +375,7 @@ export default class FormElementsEdit extends React.Component {
                         />
                         <label
                           className="custom-control-label"
-                          onClick={(e) =>
-                            this.editElementProp("inline", "none", e, {
+                          onClick={(e) => this.editElementProp('inline', 'none', e, {
                               canHaveDisplayHorizontal,
                             })
                           }
@@ -387,8 +394,7 @@ export default class FormElementsEdit extends React.Component {
                         />
                         <label
                           className="custom-control-label"
-                          onClick={(e) =>
-                            this.editElementProp("inline", "checked", e, {
+                          onClick={(e) => this.editElementProp('inline', 'checked', e, {
                               canHaveDisplayHorizontal,
                             })
                           }
@@ -406,7 +412,9 @@ export default class FormElementsEdit extends React.Component {
         { this.props.element.hasOwnProperty('src') &&
           <div>
             <div className="form-group">
-              <label className="control-label" htmlFor="srcInput"><IntlMessages id="link-to" />:</label>
+              <label
+              // className="control-label"
+               htmlFor="srcInput"><IntlMessages id="link-to" />:</label>
               <input id="srcInput" type="text" className="form-control" defaultValue={this.props.element.src} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'src', 'value')} />
             </div>
           </div>
@@ -423,11 +431,15 @@ export default class FormElementsEdit extends React.Component {
             </div>
             <div className="row">
               <div className="col-sm-3">
-                <label className="control-label" htmlFor="elementWidth"><IntlMessages id="width" />:</label>
+                <label
+                // className="control-label"
+                 htmlFor="elementWidth"><IntlMessages id="width" />:</label>
                 <input id="elementWidth" type="text" className="form-control" defaultValue={this.props.element.width} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'width', 'value')} />
               </div>
               <div className="col-sm-3">
-                <label className="control-label" htmlFor="elementHeight"><IntlMessages id="height" />:</label>
+                <label
+                // className="control-label"
+                 htmlFor="elementHeight"><IntlMessages id="height" />:</label>
                 <input id="elementHeight" type="text" className="form-control" defaultValue={this.props.element.height} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'height', 'value')} />
               </div>
             </div>
@@ -480,7 +492,9 @@ export default class FormElementsEdit extends React.Component {
         {this.state.element.element === 'Signature' && this.props.element.readOnly
           ? (
             <div className="form-group">
-              <label className="control-label" htmlFor="variableKey"><IntlMessages id="variable-key" />:</label>
+              <label
+              // className="control-label"
+               htmlFor="variableKey"><IntlMessages id="variable-key" />:</label>
               <input id="variableKey" type="text" className="form-control" defaultValue={this.props.element.variableKey} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'variableKey', 'value')} />
               <p className="help-block"><IntlMessages id="variable-key-desc" />.</p>
             </div>
@@ -490,7 +504,9 @@ export default class FormElementsEdit extends React.Component {
 
         {canHavePageBreakBefore &&
           <div className="form-group">
-            <label className="control-label"><IntlMessages id="print-options" /></label>
+            <label
+            // className="control-label"
+            ><IntlMessages id="print-options" /></label>
             <div className="custom-control custom-checkbox">
               <input id="page-break-before-element" className="custom-control-input" type="checkbox" checked={this_checked_page_break} value={true} onChange={this.editElementProp.bind(this, 'pageBreakBefore', 'checked')} />
               <label className="custom-control-label" htmlFor="page-break-before-element">
@@ -502,7 +518,9 @@ export default class FormElementsEdit extends React.Component {
 
         {/* {canHaveAlternateForm &&
           <div className="form-group">
-            <label className="control-label"><IntlMessages id="alternate-signature-page" /></label>
+            <label
+            // className="control-label"
+            ><IntlMessages id="alternate-signature-page" /></label>
             <div className="custom-control custom-checkbox">
               <input id="display-on-alternate" className="custom-control-input" type="checkbox" checked={this_checked_alternate_form} value={true} onChange={this.editElementProp.bind(this, 'alternateForm', 'checked')} />
               <label className="custom-control-label" htmlFor="display-on-alternate">
@@ -514,7 +532,9 @@ export default class FormElementsEdit extends React.Component {
         {
           canDisplayThousandSeparators &&
           <div className="form-group">
-            <label className="control-label"><IntlMessages id="display-thousand-separators-options" /></label>
+            <label
+            // className="control-label"
+            ><IntlMessages id="display-thousand-separators-options" /></label>
             <div className="custom-control custom-checkbox">
               <input id="display-thousand-separators" className="custom-control-input" type="checkbox" checked={this_checked_display_thousand_separators} value={true} onChange={this.editElementProp.bind(this, 'displayThousandSeparators', 'checked')} />
               <label className="custom-control-label" htmlFor="display-thousand-separators">
@@ -526,7 +546,9 @@ export default class FormElementsEdit extends React.Component {
         { this.props.element.hasOwnProperty('step') &&
           <div className="form-group">
             <div className="form-group-range">
-              <label className="control-label" htmlFor="rangeStep"><IntlMessages id="step" /></label>
+              <label
+              // className="control-label"
+               htmlFor="rangeStep"><IntlMessages id="step" /></label>
               <input id="rangeStep" type="number" className="form-control" defaultValue={this.props.element.step} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'step', 'value')} />
             </div>
           </div>
@@ -534,7 +556,9 @@ export default class FormElementsEdit extends React.Component {
         { this.props.element.hasOwnProperty('min_value') &&
           <div className="form-group">
             <div className="form-group-range">
-              <label className="control-label" htmlFor="rangeMin"><IntlMessages id="min" /></label>
+              <label
+              // className="control-label"
+               htmlFor="rangeMin"><IntlMessages id="min" /></label>
               <input id="rangeMin" type="number" className="form-control" defaultValue={this.props.element.min_value} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'min_value', 'value')} />
               <input type="text" className="form-control" defaultValue={this.props.element.min_label} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'min_label', 'value')} />
             </div>
@@ -543,7 +567,9 @@ export default class FormElementsEdit extends React.Component {
         { this.props.element.hasOwnProperty('max_value') &&
           <div className="form-group">
             <div className="form-group-range">
-              <label className="control-label" htmlFor="rangeMax"><IntlMessages id="max" /></label>
+              <label
+              // className="control-label"
+               htmlFor="rangeMax"><IntlMessages id="max" /></label>
               <input id="rangeMax" type="number" className="form-control" defaultValue={this.props.element.max_value} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'max_value', 'value')} />
               <input type="text" className="form-control" defaultValue={this.props.element.max_label} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'max_label', 'value')} />
             </div>
@@ -552,14 +578,18 @@ export default class FormElementsEdit extends React.Component {
         { this.props.element.hasOwnProperty('default_value') &&
           <div className="form-group">
             <div className="form-group-range">
-              <label className="control-label" htmlFor="defaultSelected"><IntlMessages id="default-selected" /></label>
+              <label
+              // className="control-label"
+               htmlFor="defaultSelected"><IntlMessages id="default-selected" /></label>
               <input id="defaultSelected" type="number" className="form-control" defaultValue={this.props.element.default_value} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'default_value', 'value')} />
             </div>
           </div>
         }
         { this.props.element.hasOwnProperty('static') && this.props.element.static &&
           <div className="form-group">
-            <label className="control-label"><IntlMessages id="text-style" /></label>
+            <label
+            // className="control-label"
+            ><IntlMessages id="text-style" /></label>
             <div className="custom-control custom-checkbox">
               <input id="do-bold" className="custom-control-input" type="checkbox" checked={this_checked_bold} value={true} onChange={this.editElementProp.bind(this, 'bold', 'checked')} />
               <label className="custom-control-label" htmlFor="do-bold">
@@ -576,19 +606,25 @@ export default class FormElementsEdit extends React.Component {
         }
         {/* { this.props.element.showDescription &&
           <div className="form-group">
-            <label className="control-label" htmlFor="questionDescription"><IntlMessages id="description" /></label>
+            <label
+            // className="control-label"
+             htmlFor="questionDescription"><IntlMessages id="description" /></label>
             <TextAreaAutosize type="text" className="form-control" id="questionDescription" defaultValue={this.props.element.description} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'description', 'value')} />
           </div>
         } */}
         { this.props.showCorrectColumn && this.props.element.canHaveAnswer && !this.props.element.hasOwnProperty('options') &&
           <div className="form-group">
-            <label className="control-label" htmlFor="correctAnswer"><IntlMessages id="correct-answer" /></label>
+            <label
+            // className="control-label"
+             htmlFor="correctAnswer"><IntlMessages id="correct-answer" /></label>
             <input id="correctAnswer" type="text" className="form-control" defaultValue={this.props.element.correct} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'correct', 'value')} />
           </div>
         }
         { this.props.element.canPopulateFromApi && this.props.element.hasOwnProperty('options') &&
           <div className="form-group">
-            <label className="control-label" htmlFor="optionsApiUrl"><IntlMessages id="populate-options-from-api" /></label>
+            <label
+            // className="control-label"
+             htmlFor="optionsApiUrl"><IntlMessages id="populate-options-from-api" /></label>
             <div className="row">
               <div className="col-sm-6">
                 {/* <input className="form-control" style={{ width: '100%' }} type="text" id="optionsApiUrl" placeholder="http://localhost:8080/api/optionsdata" /> */}
@@ -602,7 +638,9 @@ export default class FormElementsEdit extends React.Component {
         }
         { this.props.element.hasOwnProperty('numberOfDecimalPlace') &&
           <div className="form-group">
-            <label className="control-label" htmlFor="numberOfDecimalPlace"><IntlMessages id="number-of-decimal-place-options" /></label>
+            <label
+            // className="control-label"
+             htmlFor="numberOfDecimalPlace"><IntlMessages id="number-of-decimal-place-options" /></label>
             <div className="row">
               <div className="col-sm-6">
                 <input value={this.state.element.numberOfDecimalPlace} onChange={this.changeNumberOfDecimalPlace} className="form-control" style={{ width: '100%' }} type="number" id="numberOfDecimalPlace" />
@@ -612,7 +650,9 @@ export default class FormElementsEdit extends React.Component {
         }
         { this.props.element.hasOwnProperty('unitSymbol') &&
           <div className="form-group">
-            <label className="control-label" htmlFor="unitSymbol"><IntlMessages id="unit-symbol-options" /></label>
+            <label
+            // className="control-label"
+             htmlFor="unitSymbol"><IntlMessages id="unit-symbol-options" /></label>
             <div className="row">
               <div className="col-sm-4">
                 <input value={this.state.element.unitSymbol} onChange={this.changeUnitSymbol} className="form-control" style={{ width: '100%' }} type="text" id="unitSymbol" />
@@ -628,7 +668,7 @@ export default class FormElementsEdit extends React.Component {
                       checked={this.state.element.unitSymbolPrefix}
                       onChange={() => {}}
                     />
-                    <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace("unit-symbol-prefix")}>
+                    <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace('unit-symbol-prefix')}>
                       <IntlMessages id="unit-symbol-attach-before-label" />
                     </label>
                   </div>
@@ -641,7 +681,7 @@ export default class FormElementsEdit extends React.Component {
                       checked={this.state.element.unitSymbolSuffix}
                       onChange={() => {}}
                     />
-                    <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace("unit-symbol-suffix")}>
+                    <label className="custom-control-label" onClick={() => this.changeUnitSymbolPlace('unit-symbol-suffix')}>
                       <IntlMessages id="unit-symbol-attach-after-label" />
                     </label>
                   </div>
@@ -666,7 +706,9 @@ export default class FormElementsEdit extends React.Component {
           <>
             <hr></hr>
             <div className="form-group">
-              <label className="control-label" htmlFor="fieldCode"><IntlMessages id="form-elements-edit.fieldCode" /> <span className="text-danger">*</span></label>
+              <label
+              // className="control-label"
+               htmlFor="fieldCode"><IntlMessages id="form-elements-edit.fieldCode" /> <span className="text-danger">*</span></label>
               <div className="row">
                 <div className="col-sm-6">
                   <input value={this.state.element.field_code} onChange={this.changeFieldCode} className="form-control" style={{ width: '100%' }} type="text" id="fieldCode" />
