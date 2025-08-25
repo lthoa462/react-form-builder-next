@@ -39,23 +39,6 @@ class ReactForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addRowTableInput = this.addRowTableInput.bind(this);
     this.deleteRowTableInput = this.deleteRowTableInput.bind(this);
-    this.state = {
-      answerData : [],
-      data : props.data
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if(prevProps.data !== this.props.data) {
-      this.setState({
-        data : this.props.data
-      });
-    }
-    if(prevProps.answer_data !== this.props.answer_data) {
-      this.setState({
-        answerData : this._convert(this.props.answer_data)
-      });
-    }
   }
 
   _convert(answers) {
@@ -74,8 +57,7 @@ class ReactForm extends React.Component {
   }
 
   _getDefaultValue(item) {
-    // return this.answerData[item.field_name];
-    return this.state.answerData[item.field_name];
+    return this.answerData[item.field_name];
   }
 
   _optionsDefaultValue(item) {
@@ -86,8 +68,7 @@ class ReactForm extends React.Component {
 
     const defaultChecked = [];
     item.options.forEach(option => {
-      // if (this.answerData[`option_${option.key}`]) {
-      if (this.state.answerData[`option_${option.key}`]) {
+      if (this.answerData[`option_${option.key}`]) {
         defaultChecked.push(option.key);
       }
     });
@@ -99,7 +80,7 @@ class ReactForm extends React.Component {
       element: item.element,
       value: '',
     };
-    if(!ref) {
+    if (!ref) {
       $item.value = null;
     } if (item.element === 'Rating') {
       $item.value = ref.inputField.current.state.rating;
@@ -123,7 +104,7 @@ class ReactForm extends React.Component {
     } else if (ref && ref.inputField && ref.inputField.current) {
       $item = ReactDOM.findDOMNode(ref.inputField.current);
       if ($item && typeof $item.value === 'string') {
-        if(!!trimValue) {
+        if (trimValue) {
           $item.value = $item.value.trim();
         } else {
           $item.value = $item.value;
@@ -133,10 +114,8 @@ class ReactForm extends React.Component {
     return $item;
   }
 
-  _getOptionKeyValue = (option) => {
-    return this.props.option_key_value === 'value' ?
-      option.value : option.key;
-  }
+  _getOptionKeyValue = (option) => (this.props.option_key_value === 'value' ?
+      option.value : option.key)
 
   _isIncorrect(item) {
     let incorrect = false;
@@ -199,8 +178,8 @@ class ReactForm extends React.Component {
       name: item.field_name,
       field_code: item.field_code,
       custom_name: item.custom_name || item.field_name,
-      column_key : item.columnKey || item.column?.key,
-      column_value : item.columnValue || item.column?.value,
+      column_key: item.columnKey || item.column?.key,
+      column_value: item.columnValue || item.column?.value,
     };
     if (!itemData.name) return null;
     const ref = this.inputs[item.field_name];
@@ -250,17 +229,14 @@ class ReactForm extends React.Component {
     e.preventDefault();
 
     let errors = [];
-    let dataTest = this._collectFormData(this.state.data, false);
-    console.log("answerData", dataTest);
-    console.log("data", this.state.data);
-    if(typeof this.props.onSubmit === 'function') {
+    if (typeof this.props.onSubmit === 'function') {
       if (!this.props.skip_validations) {
         errors = this.validateForm();
       }
       const { onSubmit } = this.props;
       if (onSubmit) {
-        let data = this._collectFormData(this.state.data, false);
-        await onSubmit(data, this.state.data, errors);
+        const data = this._collectFormData(this.props.data, false);
+        await onSubmit(data, this.props.data, errors);
       }
     } else {
       if (!this.props.skip_validations) {
@@ -297,10 +273,10 @@ class ReactForm extends React.Component {
     //   const data = this._collectFormData(this.props.data, true);
     //   onBlur(data);
     // }
-    if(!this.props.read_only) {
+    if (!this.props.read_only) {
       if (typeof this.props.onBlur === 'function') {
         const { onBlur } = this.props;
-        const data = this._collectFormData(this.state.data, false);
+        const data = this._collectFormData(this.props.data, false);
         onBlur(data);
       }
       // else {
@@ -321,20 +297,18 @@ class ReactForm extends React.Component {
     // }
     if (typeof this.props.onChange === 'function') {
       const { onChange } = this.props;
-      const data = this._collectFormData(this.state.data, false);
-      onChange(data, this.state.data);
+      const data = this._collectFormData(this.props.data, false);
+      onChange(data, this.props.data);
     }
   }
 
   validateForm() {
     const errors = [];
-    // let data_items = this.props.data;
-    let data_items = this.state.data;
+    let data_items = this.props.data;
     const { intl } = this.props;
 
     if (this.props.display_short) {
-      // data_items = this.props.data.filter((i) => i.alternateForm === true);
-      data_items = this.state.data.filter((i) => i.alternateForm === true);
+      data_items = this.props.data.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach(item => {
@@ -353,7 +327,7 @@ class ReactForm extends React.Component {
         if (emailValue) {
             const validateEmail = (email) => email.match(
               // eslint-disable-next-line no-useless-escape
-              /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+              /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             );
           const checkEmail = validateEmail(emailValue);
           if (!checkEmail) {
@@ -369,7 +343,7 @@ class ReactForm extends React.Component {
         if (phoneValue) {
           const validatePhone = (phone) => phone.match(
             // eslint-disable-next-line no-useless-escape
-            /^[+]?(1\-|1\s|1|\d{3}\-|\d{3}\s|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/g
+            /^[+]?(1\-|1\s|1|\d{3}\-|\d{3}\s|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/g,
           );
           const checkPhone = validatePhone(phoneValue);
           if (!checkPhone) {
@@ -389,7 +363,7 @@ class ReactForm extends React.Component {
   }
 
   async addRowTableInput(parentId, row, col) {
-    let taskData = this.state.data;
+    let taskData = this.props.data;
     const itemWithId = taskData.find(item => item.id === parentId);
     const childItemIds = itemWithId.childItems;
     const childColItemIds = itemWithId.childItems.slice(0, col);
@@ -399,69 +373,66 @@ class ReactForm extends React.Component {
       const lastUnderscoreIndex = item.field_name.lastIndexOf('_');
       return {
         ...item,
-        field_name : (lastUnderscoreIndex !== -1) ? (item.field_name.substring(0, lastUnderscoreIndex + 1) + ID.uuid()) : item.field_name,
+        field_name: (lastUnderscoreIndex !== -1) ? (item.field_name.substring(0, lastUnderscoreIndex + 1) + ID.uuid()) : item.field_name,
         id: ID.uuid(),
-      }
+      };
     });
 
     const position = parseInt(col) * (parseInt(row) + 1);
     const newChildItemIds = [
       ...childItemIds.slice(0, position),
       ...updatedChildItems.map(item => item.id),
-      ...childItemIds.slice(position)
+      ...childItemIds.slice(position),
     ];
     taskData = taskData.concat(updatedChildItems);
     taskData = taskData.map(item => {
-      if(item.id === parentId) {
+      if (item.id === parentId) {
         return {
           ...item,
-          rowCount : parseInt(item.rowCount) + 1,
-          childItems: newChildItemIds
-        }
-      } else {
-        return {
-          ...item
-        }
+          rowCount: parseInt(item.rowCount) + 1,
+          childItems: newChildItemIds,
+        };
       }
+        return {
+          ...item,
+        };
     });
     taskData = taskDataIsUnique(taskData);
     await this.setState({
-      data : taskData
+      data: taskData,
     });
     this.handleChange();
   }
 
   async deleteRowTableInput(parentId, row, col) {
-    let taskData = this.state.data;
+    let taskData = this.props.data;
     const itemWithId = taskData.find(item => item.id === parentId);
-    let newChildItems = [...itemWithId.childItems];
+    const newChildItems = [...itemWithId.childItems];
     const startIndex = parseInt(row) * parseInt(col);
     const endIndex = startIndex + parseInt(col);
     const deleteIds = newChildItems.filter((id, index) => index >= startIndex && index < endIndex);
     newChildItems.splice(parseInt(row) * parseInt(col), parseInt(col));
     taskData = taskData.filter(task => !deleteIds.includes(task.id));
     taskData = taskData.map(item => {
-      if(item.id === parentId) {
+      if (item.id === parentId) {
         return {
           ...item,
-          rowCount : parseInt(item.rowCount) - 1,
-          childItems: newChildItems
-        }
-      } else {
-        return {
-          ...item
-        }
+          rowCount: parseInt(item.rowCount) - 1,
+          childItems: newChildItems,
+        };
       }
+        return {
+          ...item,
+        };
     });
     await this.setState({
-      data : taskData
+      data: taskData,
     });
     this.handleChange();
   }
 
   getDataById(id) {
-    // const { data } = this.props;
-    const { data } = this.state;
+    const { data } = this.props;
     return data.find(x => x.id === id);
   }
 
@@ -542,18 +513,17 @@ class ReactForm extends React.Component {
   }
 
   render() {
-    // let data_items = this.props.data;
-    let data_items = this.state.data;
+    let data_items = this.props.data;
 
     if (this.props.display_short) {
       // data_items = this.props.data.filter((i) => i.alternateForm === true);
-      data_items = this.state.data.filter((i) => i.alternateForm === true);
+      data_items = this.props.data.filter((i) => i.alternateForm === true);
     }
 
     data_items.forEach((item) => {
       if (item && item.readOnly && item.variableKey && this.props.variables[item.variableKey]) {
         // this.answerData[item.field_name] = this.props.variables[item.variableKey];
-        this.state.answerData[item.field_name] = this.props.variables[item.variableKey];
+        this.answerData[item.field_name] = this.props.variables[item.variableKey];
       }
     });
 
