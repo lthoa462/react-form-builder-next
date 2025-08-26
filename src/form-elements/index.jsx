@@ -7,12 +7,12 @@ import SignaturePad from 'react-signature-canvas';
 import ReactBootstrapSlider from 'react-bootstrap-slider';
 import CurrencyFormat from 'react-currency-format';
 
+import { MultiSelect as MultiSelectComponent } from 'react-multi-select-component';
 import StarRating from './star-rating';
 import DatePicker from './date-picker';
 import ComponentHeader from './component-header';
 import ComponentLabel from './component-label';
 import myxss from './myxss';
-import { MultiSelect as MultiSelectComponent } from "react-multi-select-component";
 import IntlMessages from '../language-provider/IntlMessages';
 
 const FormElements = {};
@@ -98,7 +98,7 @@ class TextInput extends React.Component {
     props.className = 'form-control';
     props.name = this.props.data.field_name;
     if (this.props.mutable) {
-      props.defaultValue = this.props.defaultValue || "";
+      props.defaultValue = this.props.defaultValue || '';
       props.ref = this.inputField;
     }
 
@@ -203,7 +203,7 @@ class PhoneNumber extends React.Component {
     props.className = 'form-control';
     props.name = this.props.data.field_name;
     if (this.props.mutable) {
-      props.defaultValue = this.props.defaultValue || "";
+      props.defaultValue = this.props.defaultValue || '';
       props.ref = this.inputField;
     }
 
@@ -238,26 +238,26 @@ class NumberInput extends React.Component {
     props.className = 'form-control';
     props.name = this.props.data.field_name;
 
-    if(this.props.data?.numberOfDecimalPlace) {
+    if (this.props.data?.numberOfDecimalPlace) {
       props.fixedDecimalScale = true;
       props.decimalScale = parseInt(this.props.data.numberOfDecimalPlace);
     }
 
-    if(this.props.data?.displayThousandSeparators === true) {
+    if (this.props.data?.displayThousandSeparators === true) {
       props.thousandSeparator = true;
     }
 
-    if(this.props.data?.unitSymbolPrefix === true) {
+    if (this.props.data?.unitSymbolPrefix === true) {
       props.prefix = this.props.data?.unitSymbol;
     }
 
-    if(this.props.data?.unitSymbolSuffix === true) {
+    if (this.props.data?.unitSymbolSuffix === true) {
       props.suffix = this.props.data?.unitSymbol;
     }
 
     if (this.props.mutable) {
       // props.defaultValue = this.props.defaultValue;
-      props.value = this.props.defaultValue || "";
+      props.value = this.props.defaultValue || '';
       props.ref = this.inputField;
     }
 
@@ -297,7 +297,7 @@ class TextArea extends React.Component {
     }
 
     if (this.props.mutable) {
-      props.defaultValue = this.props.defaultValue || "";
+      props.defaultValue = this.props.defaultValue || '';
       props.ref = this.inputField;
     }
 
@@ -309,7 +309,7 @@ class TextArea extends React.Component {
         <ComponentHeader {...this.props} />
         <div className="form-group">
           <ComponentLabel {...this.props}/>
-          <textarea {...props} style={{ height : "unset"}} />
+          <textarea {...props} style={{ height: 'unset' }} />
         </div>
       </div>
     );
@@ -360,12 +360,12 @@ class Dropdown extends React.Component {
 class MultiSelect extends React.Component {
   static defaultProps = {
     data: {
-      options : [],
-      overrideStrings : {}
+      options: [],
+      overrideStrings: {},
     },
-    defaultValue : [],
-    read_only : false,
-    mutable : false
+    defaultValue: [],
+    read_only: false,
+    mutable: false,
   };
 
   constructor(props) {
@@ -374,7 +374,7 @@ class MultiSelect extends React.Component {
     this.state = {
       selected: this.props.defaultValue ? this.props.defaultValue : [],
       stringSelected: '',
-      convertedOptions: this.convertOptions(this.props.data.options)
+      convertedOptions: this.convertOptions(this.props.data.options),
     };
     this.disabled = '';
     this.appFooterZIndex = document.querySelector('.app-footer')?.style.zIndex;
@@ -384,12 +384,10 @@ class MultiSelect extends React.Component {
     this.setState({ selected, stringSelected: JSON.stringify(selected) });
   }
 
-  convertOptions = (options) => {
-    return options.map(option => ({
+  convertOptions = (options) => options.map(option => ({
       value: option.value,
-      label: option.text
-    }));
-  }
+      label: option.text,
+    }))
 
   componentDidUpdate(prevProps) {
     if (prevProps.data.options !== this.props.data.options) {
@@ -405,22 +403,20 @@ class MultiSelect extends React.Component {
   handleSelectChange = () => {}
 
   onMenuToggle = (event) => {
-    if(event) {
+    if (event) {
       this.appFooterZIndex = document.querySelector('.app-footer')?.style.zIndex;
-      if(document.querySelector('.app-footer')) {
+      if (document.querySelector('.app-footer')) {
         document.querySelector('.app-footer').style.zIndex = '-1';
       }
-    } else {
-      if(document.querySelector('.app-footer')) {
+    } else if (document.querySelector('.app-footer')) {
         document.querySelector('.app-footer').style.zIndex = this.appFooterZIndex;
       }
-    }
   }
 
   render() {
     const props = {
       className: 'form-select',
-      name: this.props.data.field_name
+      name: this.props.data.field_name,
     };
 
     if (this.props.mutable) {
@@ -467,9 +463,9 @@ class Signature extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.defaultValue !== this.props.defaultValue) {
+    if (prevProps.defaultValue !== this.props.defaultValue) {
       this.setState({
-        defaultValue : this.props.defaultValue
+        defaultValue: this.props.defaultValue,
       });
     }
   }
@@ -537,9 +533,9 @@ class Tags extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.data !== this.props.data || prevProps.defaultValue !== this.props.defaultValue) {
+    if (prevProps.data !== this.props.data || prevProps.defaultValue !== this.props.defaultValue) {
       this.setState({
-        value : this.getDefaultValue(this.props.defaultValue, this.props.data.options)
+        value: this.getDefaultValue(this.props.defaultValue, this.props.data.options),
       });
     }
   }
@@ -557,9 +553,9 @@ class Tags extends React.Component {
 
   // state = { value: this.props.defaultValue !== undefined ? this.props.defaultValue.split(',') : [] };
 
-  handleChange = async(e) => {
+  handleChange = async (e) => {
     await this.setState({ value: e || [] });
-    if(typeof this.props.handleChange === 'function') {
+    if (typeof this.props.handleChange === 'function') {
       this.props.handleChange();
     }
   };
@@ -618,16 +614,16 @@ class Checkboxes extends React.Component {
           <ComponentLabel {...this.props} />
           {this.props.data.options.map((option) => {
             // const this_key = `preview_${option.key}`;
-            const this_key = `preview_${this.props.data.id}_${option.key}`;
+            const this_key = `preview_${this.props.data.id}_${Math.random()}_${option.key}`;
             const props = {};
             props.name = `option_${option.key}`;
 
             props.type = 'checkbox';
             props.value = option.value;
             if (self.props.mutable) {
-              // props.defaultChecked = self.props.defaultValue !== undefined && (self.props.defaultValue.indexOf(option.key) > -1 || self.props.defaultValue.indexOf(option.value) > -1);
+              props.defaultChecked = self.props.defaultValue !== undefined && (self.props.defaultValue.indexOf(option.key) > -1 || self.props.defaultValue.indexOf(option.value) > -1);
               // props.checked = self.props.defaultValue !== undefined && self.props.defaultValue.indexOf(option.value) > -1;
-              props.defaultChecked = self.props.defaultValue !== undefined && self.props.defaultValue.indexOf(option.value) > -1;
+              // props.defaultChecked = self.props.defaultValue !== undefined && self.props.defaultValue.indexOf(option.value) > -1;
             }
             if (this.props.read_only) {
               props.disabled = 'disabled';
@@ -670,7 +666,7 @@ class RadioButtons extends React.Component {
           <ComponentLabel {...this.props} />
           {this.props.data.options.map((option) => {
             // const this_key = `preview_${option.key}`;
-            const this_key = `preview_${this.props.data.id}_${option.key}`;
+            const this_key = `preview_${this.props.data.id}_${Math.random()}_${option.key}`;
             const props = {};
             props.name = self.props.data.field_name;
 
@@ -728,9 +724,9 @@ class Rating extends React.Component {
     this.inputField = React.createRef();
   }
 
-  handleChange = async(e) => {
+  handleChange = async (e) => {
     await this.setState({ value: e || [] });
-    if(typeof this.props.handleChange === 'function') {
+    if (typeof this.props.handleChange === 'function') {
       this.props.handleChange();
     }
   };
@@ -805,7 +801,7 @@ class Camera extends React.Component {
 
   displayImage = (e) => {
     const self = this;
-    const target = e.target;
+    const { target } = e;
     if (target.files && target.files.length) {
       self.setState({ img: target.files[0], previewImg: URL.createObjectURL(target.files[0]) });
     }
@@ -913,7 +909,7 @@ class FileUpload extends React.Component {
 
   displayFileUpload = (e) => {
     const self = this;
-    const target = e.target;
+    const { target } = e;
     let file;
 
     if (target.files && target.files.length > 0) {
@@ -1009,10 +1005,10 @@ class FileUpload extends React.Component {
                     <div style={{ display: 'inline-block', marginLeft: '5px' }}>
                       {this.state.fileUpload.size.length > 6
                         ? `Size:  ${Math.ceil(
-                            this.state.fileUpload.size / (1024 * 1024)
+                            this.state.fileUpload.size / (1024 * 1024),
                           )} mb`
                         : `Size:  ${Math.ceil(
-                            this.state.fileUpload.size / 1024
+                            this.state.fileUpload.size / 1024,
                           )} kb`}
                     </div>
                   </div>
